@@ -17,7 +17,7 @@ Once the device has booted, a sound is played and after 60 seconds, Wi-Fi is dis
 ## Installation
 
 ```
-wget https://raw.githubusercontent.com/nicokaiser/rpi-a2dp/master/install.sh
+wget https://raw.githubusercontent.com/nicokaiser/rpi-bluetooth-receiver/master/install.sh
 sudo install.sh
 ```
 

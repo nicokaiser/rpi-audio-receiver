@@ -6,8 +6,6 @@ A simple, light weight Bluetooth Audio (A2DP) receiver based on Raspbian, BlueZ 
 
 Devices like phones, tablets and computers can play audio via this receiver.
 
-Once the device has booted, a sound is played and after 60 seconds, Wi-Fi is disabled _unless_ an SSH login occurs during this time.
-
 ## Requirements
 
 - Raspberry Pi with Bluetooth support (tested wth Raspberry Pi Zero W)
@@ -27,9 +25,7 @@ This will:
 - Upgrade existing packages
 - Update the Raspberry Pi firmware
 - Install and configure BlueZ, ALSA and PulseAudio
-- Enable auto login and for user "pi"
 - Enable simple pairing/trusting agent
-- Install a Wi-Fi timeout script (see below)
 - Enable read-only mode for the SD card
 
 (Or, just read the `install.sh` file and execute the instructions by hand if you are paranoid)
@@ -46,7 +42,7 @@ dtparam=audio=off
 
 - Only one Bluetooth device can be connected at a time, otherwise interruptions may occur.
 - The device is always open, new clients can connect at any time without authentication
-- Wi-Fi needs to be disabled during playback, this is a limitation of the Raspberry Pi hardware (see raspberrypi/linux#1552)
+- Wi-Fi is disabled during playback, this is a limitation of the Raspberry Pi hardware (see raspberrypi/linux#1552)
 - To permanently save paired devices, the Raspberry has to be switched to read-write mode (`mount -o remount,rw /`) until all devices have been paired once.
 
 ## References

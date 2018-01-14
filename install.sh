@@ -60,39 +60,36 @@ sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/
 # PulseAudio settings
 mv /etc/pulse/daemon.conf /etc/pulse/daemon.conf.orig
 echo "resample-method = ffmpeg" > /etc/pulse/daemon.conf
-sed -i.orig 's/^load-module module-udev-detect$/load-module module-udev-detect tsched=0/' /etc/pulse/default.pa 
+sed -i.orig 's/^load-module module-udev-detect$/load-module module-udev-detect tsched=0/' /etc/pulse/system.pa
+echo "load-module module-bluetooth-policy" >> /etc/pulse/system.pa
+echo "load-module module-bluetooth-discover" >> /etc/pulse/system.pa
 
-# /home/pi/disable-wifi.sh
-cat <<'EOF' > /home/pi/disable-wifi.sh
-#!/bin/sh
-sleep 60
-if [ -f "/usr/share/sounds/freedesktop/stereo/device-removed.oga" ] ; then
-    ogg123 -q -d wav -f - /usr/share/sounds/freedesktop/stereo/device-removed.oga | aplay -q - &
-fi
-echo Disabling Wi-Fi
-sudo -n ifconfig wlan0 down
+mv /etc/pulse/client.conf /etc/pulse/client.conf.orig
+cat <<'EOF' >> /etc/pulse/client.conf
+default-server = /var/run/pulse/native
+autospawn = no
 EOF
-chown pi:pi /home/pi/disable-wifi.sh
-chmod 755 /home/pi/disable-wifi.sh
+usermod -a -G pulse-access root
+usermod -a -G bluetooth pulse
 
-# /home/pi/.profile
-cp -a /home/pi/.profile /home/pi/.profile.orig
-cat <<'EOF' >> /home/pi/.profile
-if ! [ -n "$SSH_CLIENT" ] && ! [ -n "$SSH_TTY" ]; then
-    pulseaudio --start
-    ~/disable-wifi.sh &
-    if [ -f "/usr/share/sounds/freedesktop/stereo/service-login.oga" ] ; then
-        ogg123 -q -d wav -f - /usr/share/sounds/freedesktop/stereo/service-login.oga | aplay -q - &
-    fi
-    ~/simple-agent &
-else
-    killall -q disable-wifi.sh
-fi
+# PulseAudio system daemon
+cat <<'EOF' > /etc/systemd/system/pulseaudio.service
+[Unit]
+Description=PulseAudio Daemon
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+PrivateTmp=true
+ExecStart=/usr/bin/pulseaudio --system --disallow-exit --disable-shm --exit-idle-time=-1
 EOF
-chown pi:pi /home/pi/.profile
+systemctl enable pulseaudio.service
+systemctl start pulseaudio.service
 
-# /home/pi/simple-agent
-cat <<'EOF' > /home/pi/simple-agent
+# Bluetooth agent
+cat <<'EOF' > /usr/local/bin/simple-agent.autotrust
 #!/usr/bin/python
 
 #Automatically authenticating bluez agent. Script modifications by Merlin Schumacher <mls@ct.de> for c't Magazin (www.ct.de)
@@ -315,21 +312,65 @@ if __name__ == '__main__':
 
     mainloop.run()
 EOF
-chown pi.pi /home/pi/simple-agent
-chmod 755 /home/pi/simple-agent
+chmod 755 /usr/local/bin/simple-agent.autotrust
 
-# Auto login
-cat <<'EOF' > /etc/systemd/system/getty@tty1.service.d/autologin.conf
+cat <<'EOF' > /etc/systemd/system/bluetooth-agent.service
+[Unit]
+Description=Bluetooth Agent
+Requires=bluetooth.service
+
+[Install]
+WantedBy=multi-user.target
+
 [Service]
-ExecStart=
-ExecStart=-/sbin/agetty --autologin pi --noclear %I 38400 linux
+Type=simple
+ExecStart=/usr/local/bin/simple-agent.autotrust
+EOF
+systemctl enable bluetooth-agent.service
+
+# Bluetooth udev script
+cat <<'EOF' > /usr/local/bin/bluez-udev
+#!/bin/bash
+name=$(sed 's/\"//g' <<< $NAME)
+if [[ ! $name =~ ^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$ ]]; then exit 0;  fi
+
+bt_name=`grep Name /var/lib/bluetooth/*/$name/info | awk -F'=' '{print $2}'`
+
+action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
+logger "Action: $action"
+
+if [ "$action" = "add" ]; then
+    logger "[$(basename $0)] Bluetooth device is being added [$name] - $bt_name"
+    bluetoothctl << EOT
+discoverable off
+EOT
+    #espeak "Device, $bt_name Connected"
+    ogg123 -q -d pulse /usr/share/sounds/freedesktop/stereo/device-added.oga
+    ifconfig wlan0 down
+    logger "$bt_name"
+fi
+
+if [ "$action" = "remove" ]; then
+    logger "[$(basename $0)] Bluetooth device is being removed [$name] - $bt_name"
+    ifconfig wlan0 up
+    #espeak "Device, $bt_name Disconnected"
+    ogg123 -q -d pulse /usr/share/sounds/freedesktop/stereo/device-removed.oga
+    bluetoothctl << EOT
+discoverable on
+EOT
+fi
+EOF
+chmod 755 /usr/local/bin/bluez-udev
+
+cat <<'EOF' > /etc/udev/rules.d/99-input.rules
+SUBSYSTEM=="input", GROUP="input", MODE="0660"
+KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluez-udev"
 EOF
 
 # Read-only mode
 wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/read-only-fs.sh
 bash read-only-fs.sh
-mkdir -p /home/pi/.config
-echo "tmpfs /home/pi/.config tmpfs nodev,nosuid,mode=1777,uid=pi 0 0" >> /etc/fstab
+echo "tmpfs /var/lib/pulse tmpfs nodev,nosuid,mode=0700,uid=pulse 0 0" >> /etc/fstab
 
 echo "Done".
 echo

@@ -29,7 +29,7 @@ echo "Upgrading packages..."
 apt upgrade -y
 
 echo "Installing packages..."
-apt install -y --no-install-recommends alsa-base alsa-utils pulseaudio pulseaudio-module-bluetooth bluez python-gobject python-dbus vorbis-tools sound-theme-freedesktop
+apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez python-gobject python-dbus vorbis-tools sound-theme-freedesktop
 
 echo "Updating Raspberry Pi firmware..."
 SKIP_BACKUP=1 PRUNE_MODULES=1 rpi-update
@@ -57,36 +57,32 @@ hciconfig hci0 sspmode 1
 # ALSA settings
 sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf
 
-# PulseAudio settings
-mv /etc/pulse/daemon.conf /etc/pulse/daemon.conf.orig
-echo "resample-method = ffmpeg" > /etc/pulse/daemon.conf
-sed -i.orig 's/^load-module module-udev-detect$/load-module module-udev-detect tsched=0/' /etc/pulse/system.pa
-echo "load-module module-bluetooth-policy" >> /etc/pulse/system.pa
-echo "load-module module-bluetooth-discover" >> /etc/pulse/system.pa
-
-mv /etc/pulse/client.conf /etc/pulse/client.conf.orig
-cat <<'EOF' >> /etc/pulse/client.conf
-default-server = /var/run/pulse/native
-autospawn = no
+# BlueALSA
+mkdir -p /etc/systemd/system/bluealsa.service.d
+cat <<'EOF' > /etc/systemd/system/bluealsa.service.d/override.conf
+[Service]
+ExecStart=
+ExecStart=/usr/bin/bluealsa --disable-hfp --disable-hsp
 EOF
-usermod -a -G pulse-access root
-usermod -a -G bluetooth pulse
 
-# PulseAudio system daemon
-cat <<'EOF' > /etc/systemd/system/pulseaudio.service
+# BlueALSA player
+cat <<'EOF' > /etc/systemd/system/bluealsa-aplay.service
 [Unit]
-Description=PulseAudio Daemon
-
-[Install]
-WantedBy=multi-user.target
+Description=BlueALSA player
+Wants=bluealsa.service
+After=bluealsa.service
 
 [Service]
 Type=simple
-PrivateTmp=true
-ExecStart=/usr/bin/pulseaudio --system --disallow-exit --disable-shm --exit-idle-time=-1
+User=root
+ExecStartPre=/bin/sleep 2
+ExecStart=/usr/bin/bluealsa-aplay --pcm-buffer-time=250000 00:00:00:00:00:00
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target
 EOF
-systemctl enable pulseaudio.service
-systemctl start pulseaudio.service
+systemctl enable bluealsa-aplay
 
 # Bluetooth agent
 cat <<'EOF' > /usr/local/bin/simple-agent.autotrust
@@ -318,13 +314,16 @@ cat <<'EOF' > /etc/systemd/system/bluetooth-agent.service
 [Unit]
 Description=Bluetooth Agent
 Requires=bluetooth.service
+After=bluetooth.target bluetooth.service
 
 [Install]
 WantedBy=multi-user.target
 
 [Service]
 Type=simple
+#ExecStartPre=/bin/sh -c '/bin/hciconfig hci0 piscan && /bin/hciconfg hci0 sspmode 1'
 ExecStart=/usr/local/bin/simple-agent.autotrust
+Restart=on-failure
 EOF
 systemctl enable bluetooth-agent.service
 
@@ -345,16 +344,15 @@ if [ "$action" = "add" ]; then
 discoverable off
 EOT
     #espeak "Device, $bt_name Connected"
-    ogg123 -q -d pulse /usr/share/sounds/freedesktop/stereo/device-added.oga
-    ifconfig wlan0 down
-    logger "$bt_name"
+    #ogg123 -q -d pulse /usr/share/sounds/freedesktop/stereo/device-added.oga
+    #ifconfig wlan0 down
 fi
 
 if [ "$action" = "remove" ]; then
     logger "[$(basename $0)] Bluetooth device is being removed [$name] - $bt_name"
-    ifconfig wlan0 up
+    #ifconfig wlan0 up
     #espeak "Device, $bt_name Disconnected"
-    ogg123 -q -d pulse /usr/share/sounds/freedesktop/stereo/device-removed.oga
+    #ogg123 -q -d pulse /usr/share/sounds/freedesktop/stereo/device-removed.oga
     bluetoothctl << EOT
 discoverable on
 EOT
@@ -370,7 +368,17 @@ EOF
 # Read-only mode
 wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/read-only-fs.sh
 bash read-only-fs.sh
-echo "tmpfs /var/lib/pulse tmpfs nodev,nosuid,mode=0700,uid=pulse 0 0" >> /etc/fstab
+
+ln -s /tmp /var/lib/dhcpcd5
+systemctl disable apt-daily-upgrade.service
+systemctl disable apt-daily-upgrade.timer
+
+rm /var/lib/systemd/random-seed
+ln -s /tmp/random-seed /var/lib/systemd/random-seed
+cat <<'EOF' > /etc/systemd/system/systemd-random-seed.service.d/override.conf
+[Service]
+ExecStartPre=/bin/echo "" > /tmp/random-seed
+EOF
 
 echo "Done".
 echo

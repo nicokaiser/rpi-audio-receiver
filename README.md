@@ -25,7 +25,9 @@ sudo su -
 ```
 apt update
 apt upgrade -y
-apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez python-gobject python-dbus vorbis-tools sound-theme-freedesktop
+apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez \
+    python-gobject python-dbus vorbis-tools sound-theme-freedesktop
+
 SKIP_BACKUP=1 PRUNE_MODULES=1 rpi-update
 ```
 
@@ -41,6 +43,7 @@ cp -b etc/machine-info /etc
 
 ```
 cp -b etc/bluetooth/main.conf /etc/bluetooth
+
 service bluetooth start
 hciconfig hci0 piscan
 hciconfig hci0 sspmode 1
@@ -54,6 +57,7 @@ Install a simple agent that accepts every connection:
 cp -b usr/local/bin/simple-agent.autotrust /usr/local/bin
 chmod 755 /usr/local/bin/simple-agent.autotrust
 cp -b etc/systemd/system/bluetooth-agent.service /etc/systemd/system
+
 systemctl enable bluetooth-agent.service
 ```
 
@@ -73,6 +77,7 @@ Override BlueALSA script to disable HFP/HSP and the depend on Bluetooth device:
 mkdir -p /etc/systemd/system/bluealsa.service.d
 cp -b etc/systemd/system/bluealsa.service.d/override.conf /etc/systemd/system/bluealsa.service.d
 cp -b etc/systemd/system/bluealsa-aplay.service /etc/systemd/system
+
 systemctl enable bluealsa-aplay
 ```
 
@@ -121,7 +126,7 @@ usermod -a -G gpio shairport-sync
 When using a HAT device like [Blinkt!](https://shop.pimoroni.com/products/blinkt):
 
 ```
-dpkg -i files/pivumeter_1.0-1_armhf.deb
+dpkg -i pivumeter_1.0-1_armhf.deb
 cp -b etc/asound.conf.pivumeter /etc
 ```
 
@@ -131,9 +136,13 @@ To ensure the USB Audio device is used, the following line in `/boot/config.txt`
 
 ```
 dtparam=audio=off
-gpu_mem=32
+gpu_mem=16
 #dtoverlay=pi3-disable-bt
 dtoverlay=hifiberry-dac
+disable_splash=1
+boot_delay=0
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=on
 ```
 
 ## Limitations

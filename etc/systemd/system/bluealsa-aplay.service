@@ -1,0 +1,15 @@
+[Unit]
+Description=BlueALSA player
+Requires=bluealsa.service
+After=bluealsa.service
+Wants=bluetooth.target sound.target
+
+[Service]
+Type=simple
+User=root
+ExecStartPre=/bin/sleep 2
+ExecStart=/usr/bin/bluealsa-aplay --pcm-buffer-time=250000 00:00:00:00:00:00
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target

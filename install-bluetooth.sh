@@ -1,3 +1,25 @@
+#!/bin/sh
+
+apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez python-gobject python-dbus
+
+# Bluetooth settings
+mv /etc/bluetooth/main.conf /etc/bluetooth/main.conf.orig
+cat <<'EOF' > /etc/bluetooth/main.conf
+[General]
+Class = 0x200414
+DiscoverableTimeout = 0
+PairableTimeout = 0
+
+[Policy]
+AutoEnable=true
+EOF
+
+service bluetooth start
+hciconfig hci0 piscan
+hciconfig hci0 sspmode 1
+
+# Bluetooth agent
+cat <<'EOF' > /usr/local/bin/simple-agent.autotrust
 #!/usr/bin/python
 
 #Automatically authenticating bluez agent. Script modifications by Merlin Schumacher <mls@ct.de> for c't Magazin (www.ct.de)
@@ -219,3 +241,89 @@ if __name__ == '__main__':
         manager.RequestDefaultAgent(path)
 
     mainloop.run()
+EOF
+chmod 755 /usr/local/bin/simple-agent.autotrust
+
+cat <<'EOF' > /etc/systemd/system/bluetooth-agent.service
+[Unit]
+Description=Bluetooth Agent
+Requires=bluetooth.service
+After=bluetooth.target bluetooth.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/simple-agent.autotrust
+EOF
+
+systemctl enable bluetooth-agent.service
+
+# ALSA settings
+sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf
+
+# BlueALSA
+mkdir -p /etc/systemd/system/bluealsa.service.d
+cat <<'EOF' > /etc/systemd/system/bluealsa.service.d/override.conf
+[Service]
+ExecStart=
+ExecStart=/usr/bin/bluealsa --disable-hfp --disable-hsp
+EOF
+
+cat <<'EOF' > /etc/systemd/system/bluealsa-aplay.service
+[Unit]
+Description=BlueALSA player
+Requires=bluealsa.service
+After=bluealsa.service
+Wants=bluetooth.target sound.target
+
+[Service]
+Type=simple
+User=root
+ExecStartPre=/bin/sleep 2
+ExecStart=/usr/bin/bluealsa-aplay --pcm-buffer-time=250000 00:00:00:00:00:00
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target
+EOF
+
+systemctl daemon-reload
+systemctl enable bluealsa-aplay
+
+# Bluetooth udev script
+cat <<'EOF' > /usr/local/bin/bluez-udev
+#!/bin/bash
+name=$(sed 's/\"//g' <<< $NAME)
+if [[ ! $name =~ ^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$ ]]; then exit 0;  fi
+
+bt_name=`grep Name /var/lib/bluetooth/*/$name/info | awk -F'=' '{print $2}'`
+
+action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
+logger "Action: $action"
+
+if [ "$action" = "add" ]; then
+    logger "[$(basename $0)] Bluetooth device is being added [$name] - $bt_name"
+    bluetoothctl << EOT
+discoverable off
+EOT
+    #aplay -q /home/pi/Music/setup-complete.wav
+    #ifconfig wlan0 down
+fi
+
+if [ "$action" = "remove" ]; then
+    logger "[$(basename $0)] Bluetooth device is being removed [$name] - $bt_name"
+    #ifconfig wlan0 up
+    #aplay -q /home/pi/Music/setup-required.wav
+    bluetoothctl << EOT
+discoverable on
+EOT
+fi
+EOF
+chmod 755 /usr/local/bin/bluez-udev
+
+cat <<'EOF' > /etc/udev/rules.d/99-input.rules
+SUBSYSTEM=="input", GROUP="input", MODE="0660"
+KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluez-udev"
+EOF

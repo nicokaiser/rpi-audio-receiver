@@ -1,6 +1,13 @@
 #!/bin/sh
 
-dpkg -i pivumeter_1.0-1_armhf.deb
+apt install --no-install-recommends -y build-essential autoconf automake libtool libasound2-dev libfftw3-dev wiringpi
+git clone https://github.com/pimoroni/pivumeter.git
+cd pivumeter
+aclocal && libtoolize
+autoconf && automake --add-missing
+./configure && make
+make install
+
 cat <<'EOF' > /etc/asound.conf.pivumeter
 pcm.hifiberry {
   type hw
@@ -33,7 +40,7 @@ pcm_scope.pivumeter {
 }
 
 pcm_scope_type.pivumeter {
-  lib /usr/lib/arm-linux-gnueabihf/libpivumeter.so
+  lib /usr/local/lib/libpivumeter.so
 }
 
 pcm.!default {

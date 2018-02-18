@@ -4,4 +4,4 @@
 
 apt update
 apt upgrade -y
-rpi-update
+SKIP_WARNING=1 rpi-update

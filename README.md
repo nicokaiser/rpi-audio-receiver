@@ -21,6 +21,8 @@ Sets hostname to `airpi`, the visible device name to `AirPi` and updates the Ras
 ```
 sudo apt update -y
 sudo apt upgrade -y
+sudo SKIP_WARNING=1 rpi-update
+
 sudo apt install -y --no-install-recommends git
 
 git clone https://github.com/nicokaiser/rpi-bluetooth-receiver.git

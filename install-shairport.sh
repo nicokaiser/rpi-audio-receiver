@@ -7,7 +7,6 @@ cat <<'EOF' > /etc/shairport-sync.conf
 general = {
   name = "AirPi";
   interpolation = "soxr";
-  volume_range_db = 30;
 }
 
 sessioncontrol = {

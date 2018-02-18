@@ -1,5 +1,6 @@
 #!/bin/sh
 
+apt install --no-install-recommends -y git
 wget https://github.com/Spotifyd/spotifyd/releases/download/untagged-7542bdb173909d014e1e/spotifyd-2018-02-14-armv7.zip
 unzip spotifyd-2018-02-14-armv7.zip
 rm spotifyd-2018-02-14-armv7.zip

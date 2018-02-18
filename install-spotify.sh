@@ -13,7 +13,7 @@ backend = alsa
 mixer = Master
 volume-control = softvol # or alsa
 bitrate = 320
-device_name = AirPi Wohnzimmer
+device_name = AirPi
 EOF
 
 cat <<'EOF' > /etc/systemd/system/spotifyd.service

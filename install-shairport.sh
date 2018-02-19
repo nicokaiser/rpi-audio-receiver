@@ -15,7 +15,7 @@ sessioncontrol = {
 }
 
 alsa = {
-  mixer_control_name = "Master";
+//  mixer_control_name = "Master";
 }
 EOF
 

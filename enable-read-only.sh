@@ -16,5 +16,5 @@ ln -s /tmp/random-seed /var/lib/systemd/random-seed
 mkdir -p /etc/systemd/system/systemd-random-seed.service.d/
 cat <<'EOF' > /etc/systemd/system/systemd-random-seed.service.d/override.conf
 [Service]
-ExecStartPre=/bin/echo "" > /tmp/random-seed
+ExecStartPre=/bin/sh -c "echo '' > /tmp/random-seed"
 EOF

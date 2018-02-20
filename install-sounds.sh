@@ -8,9 +8,9 @@ cd /home/pi/Music
 unzip beocreate-sounds.zip
 rm beocreate-sounds.zip
 
-cat <<'EOF' > /etc/systemd/system/airpi-startup.service
+cat <<'EOF' > /etc/systemd/system/startup-sound.service
 [Unit]
-Description=AirPi Startup
+Description=Startup sound
 After=multi-user.target
 
 [Service]
@@ -20,4 +20,4 @@ ExecStart=/usr/bin/aplay -q /home/pi/Music/startup.wav
 [Install]
 WantedBy=multi-user.target
 EOF
-systemctl enable airpi-startup.service
+systemctl enable startup-sound.service

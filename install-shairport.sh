@@ -6,7 +6,7 @@ usermod -a -G gpio shairport-sync
 cat <<'EOF' > /etc/shairport-sync.conf
 general = {
   name = "AirPi";
-  interpolation = "soxr";
+//  interpolation = "soxr";
 }
 
 sessioncontrol = {

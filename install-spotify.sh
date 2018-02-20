@@ -7,13 +7,16 @@ rm spotifyd-2018-02-14-armv7.zip
 sudo mkdir -p /opt/spotifyd
 mv spotifyd /opt/spotifyd
 
-cat <<'EOF' > /etc/spotifyd.conf
+PRODUCTNAME=$(hostnamectl status --pretty)
+PRODUCTNAME=${PRODUCTNAME:-$(hostname)}
+
+cat <<EOF > /etc/spotifyd.conf
 [global]
 backend = alsa
 mixer = Master
 volume-control = softvol # or alsa
 bitrate = 320
-device_name = AirPi
+device_name = ${PRODUCTNAME}
 EOF
 
 cat <<'EOF' > /etc/systemd/system/spotifyd.service

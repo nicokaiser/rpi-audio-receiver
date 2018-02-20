@@ -3,9 +3,12 @@
 apt install -y --no-install-recommends shairport-sync
 usermod -a -G gpio shairport-sync
 
+PRODUCTNAME=$(hostnamectl status --pretty)
+PRODUCTNAME=${PRODUCTNAME:-$(hostname)}
+
 cat <<'EOF' > /etc/shairport-sync.conf
 general = {
-  name = "AirPi";
+  name = "${PRODUCTNAME}";
 //  interpolation = "soxr";
 }
 

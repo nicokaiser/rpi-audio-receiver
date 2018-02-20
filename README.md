@@ -69,3 +69,11 @@ sudo ./enable-read-only.sh
 - Only one Bluetooth device can be connected at a time, otherwise interruptions may occur.
 - The device is always open, new clients can connect at any time without authentication
 - To permanently save paired devices, the Raspberry has to be switched to read-write mode (`mount -o remount,rw /`) until all devices have been paired once.
+
+## References
+
+- [BlueALSA: Bluetooth Audio ALSA Backend](https://github.com/Arkq/bluez-alsa)
+- [Shairport Sync: AirPlay Audio Receiver](https://github.com/mikebrady/shairport-sync)
+- [Spotifyd: open source Spotify client](https://github.com/Spotifyd/spotifyd)
+- [pivumeter: ALSA plugin for displaying VU meters on various Raspberry Pi add-ons](https://github.com/pimoroni/pivumeter)
+- [Adafruit: Read-Only Raspberry Pi](https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/blob/master/read-only-fs.sh)

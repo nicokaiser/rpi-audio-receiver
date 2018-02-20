@@ -174,7 +174,7 @@ systemctl enable bluealsa-aplay
 cat <<'EOF' > /usr/local/bin/bluetooth-udev
 #!/bin/bash
 name=$(sed 's/\"//g' <<< $NAME)
-if [[ ! $name =~ ^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$ ]]; then exit 0;  fi
+if [[ ! $name =~ ^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$ ]]; then exit 0; fi
 
 bt_name=`grep Name /var/lib/bluetooth/*/$name/info | awk -F'=' '{print $2}'`
 
@@ -186,14 +186,18 @@ if [ "$action" = "add" ]; then
     bluetoothctl << EOT
 discoverable off
 EOT
-    #aplay -q /home/pi/Music/setup-complete.wav
+    if [ -f /home/pi/Music/setup-complete.wav ]; then
+        aplay -q /home/pi/Music/setup-complete.wav
+    fi
     #ifconfig wlan0 down
 fi
 
 if [ "$action" = "remove" ]; then
     logger "[$(basename $0)] Bluetooth device is being removed [$name] - $bt_name"
     #ifconfig wlan0 up
-    #aplay -q /home/pi/Music/setup-required.wav
+    if [ -f /home/pi/Music/setup-required.wav ]; then
+        aplay -q /home/pi/Music/setup-required.wav
+    fi
     bluetoothctl << EOT
 discoverable on
 EOT

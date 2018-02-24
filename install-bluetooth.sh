@@ -147,6 +147,7 @@ cat <<'EOF' > /etc/systemd/system/bluealsa.service.d/override.conf
 [Service]
 ExecStart=
 ExecStart=/usr/bin/bluealsa --disable-hfp --disable-hsp
+ExecStartPre=/bin/sleep 1
 EOF
 
 cat <<'EOF' > /etc/systemd/system/bluealsa-aplay.service
@@ -161,7 +162,6 @@ Type=simple
 User=root
 ExecStartPre=/bin/sleep 2
 ExecStart=/usr/bin/bluealsa-aplay --pcm-buffer-time=250000 00:00:00:00:00:00
-Restart=on-failure
 
 [Install]
 WantedBy=graphical.target
@@ -169,6 +169,7 @@ EOF
 
 systemctl daemon-reload
 systemctl enable bluealsa-aplay
+echo 'ACTION=="add", KERNEL=="hci0", RUN+="/bin/systemctl start bluealsa-aplay.service"' > /etc/udev/rules.d/61-bluealsa-aplay.rules
 
 # Bluetooth udev script
 cat <<'EOF' > /usr/local/bin/bluetooth-udev

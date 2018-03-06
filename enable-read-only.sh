@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# Enable read-only filesystem mode
-
 wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/read-only-fs.sh
 bash read-only-fs.sh
 

@@ -1,9 +1,10 @@
 #!/bin/sh
 
+echo "Installing Bluetooth Audio (BlueALSA)"
+
 apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez python-gobject python-dbus
 
 # Bluetooth settings
-mv /etc/bluetooth/main.conf /etc/bluetooth/main.conf.orig
 cat <<'EOF' > /etc/bluetooth/main.conf
 [General]
 Class = 0x200414
@@ -18,7 +19,7 @@ hciconfig hci0 piscan
 hciconfig hci0 sspmode 1
 
 # Bluetooth agent
-cat <<'EOF' > /usr/local/bin/bluetooth-agent
+cat <<'EOF' > /opt/local/bin/bluetooth-agent
 #!/usr/bin/python
 
 # Automatically authenticating bluez agent.
@@ -120,7 +121,7 @@ if __name__ == '__main__':
 
     mainloop.run()
 EOF
-chmod 755 /usr/local/bin/bluetooth-agent
+chmod 755 /opt/local/bin/bluetooth-agent
 
 cat <<'EOF' > /etc/systemd/system/bluetooth-agent.service
 [Unit]
@@ -133,9 +134,8 @@ WantedBy=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/bluetooth-agent
+ExecStart=/opt/local/bin/bluetooth-agent
 EOF
-
 systemctl enable bluetooth-agent.service
 
 # ALSA settings
@@ -166,47 +166,43 @@ ExecStart=/usr/bin/bluealsa-aplay --pcm-buffer-time=250000 00:00:00:00:00:00
 [Install]
 WantedBy=graphical.target
 EOF
-
 systemctl daemon-reload
 systemctl enable bluealsa-aplay
 echo 'ACTION=="add", KERNEL=="hci0", RUN+="/bin/systemctl start bluealsa-aplay.service"' > /etc/udev/rules.d/61-bluealsa-aplay.rules
 
 # Bluetooth udev script
-cat <<'EOF' > /usr/local/bin/bluetooth-udev
+cat <<'EOF' > /opt/local/bin/bluetooth-udev
 #!/bin/bash
 name=$(sed 's/\"//g' <<< $NAME)
 if [[ ! $name =~ ^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$ ]]; then exit 0; fi
 
-bt_name=`grep Name /var/lib/bluetooth/*/$name/info | awk -F'=' '{print $2}'`
-
 action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
-logger "Action: $action"
 
 if [ "$action" = "add" ]; then
-    logger "[$(basename $0)] Bluetooth device is being added [$name] - $bt_name"
     bluetoothctl << EOT
 discoverable off
 EOT
     if [ -f /home/pi/Music/setup-complete.wav ]; then
         aplay -q /home/pi/Music/setup-complete.wav
     fi
-    #ifconfig wlan0 down
+    # disconnect wifi to prevent dropouts
+    # ifconfig wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
-    logger "[$(basename $0)] Bluetooth device is being removed [$name] - $bt_name"
-    #ifconfig wlan0 up
     if [ -f /home/pi/Music/setup-required.wav ]; then
         aplay -q /home/pi/Music/setup-required.wav
     fi
+    # reenable wifi
+    # ifconfig wlan0 up &
     bluetoothctl << EOT
 discoverable on
 EOT
 fi
 EOF
-chmod 755 /usr/local/bin/bluetooth-udev
+chmod 755 /opt/local/bin/bluetooth-udev
 
 cat <<'EOF' > /etc/udev/rules.d/99-bluetooth-udev.rules
 SUBSYSTEM=="input", GROUP="input", MODE="0660"
-KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluetooth-udev"
+KERNEL=="input[0-9]*", RUN+="/opt/local/bin/bluetooth-udev"
 EOF

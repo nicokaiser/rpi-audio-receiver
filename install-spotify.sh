@@ -1,22 +1,23 @@
 #!/bin/sh
 
-apt install --no-install-recommends -y git
+echo "Installing Spotify Connect (spotifyd)"
+
 wget https://github.com/Spotifyd/spotifyd/releases/download/untagged-5714215a4cf45130004f/spotifyd-2018-03-03-armv6.zip
 unzip spotifyd-2018-03-03-armv6.zip
 rm spotifyd-2018-03-03-armv6.zip
-sudo mkdir -p /opt/spotifyd
-mv spotifyd /opt/spotifyd
+mkdir -p /opt/local/bin
+mv spotifyd /opt/local/bin
 
-PRODUCTNAME=$(hostnamectl status --pretty)
-PRODUCTNAME=${PRODUCTNAME:-$(hostname)}
+PRETTY_HOSTNAME=$(hostnamectl status --pretty)
+PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
 cat <<EOF > /etc/spotifyd.conf
 [global]
 backend = alsa
 mixer = Master
 volume-control = softvol # or alsa
-bitrate = 320
 device_name = ${PRODUCTNAME}
+bitrate = 320
 EOF
 
 cat <<'EOF' > /etc/systemd/system/spotifyd.service
@@ -24,12 +25,12 @@ cat <<'EOF' > /etc/systemd/system/spotifyd.service
 Description=Spotify Connect
 Documentation=https://github.com/Spotifyd/spotifyd
 After=network-online.target
-Requires=sound.target network-online.target
+After=sound.target
 
 [Service]
 Type=idle
 User=pi
-ExecStart=/opt/spotifyd/spotifyd -c /etc/spotifyd.conf --no-daemon
+ExecStart=/opt/local/bin/spotifyd -c /etc/spotifyd.conf --no-daemon
 Restart=always
 RestartSec=10
 StartLimitInterval=30
@@ -38,5 +39,5 @@ StartLimitBurst=20
 [Install]
 WantedBy=multi-user.target
 EOF
-
+systemctl daemon-reload
 systemctl enable --now spotifyd.service

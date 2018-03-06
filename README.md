@@ -1,6 +1,6 @@
-# Raspberry Pi Bluetooth & AirPlay Receiver
+# Raspberry Pi Audio Receiver
 
-A simple, light weight Bluetooth Audio (A2DP) receiver based on Raspbian, BlueZ and ALSA.
+A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay, Spotify Connect and UPnP.
 
 ## Features
 

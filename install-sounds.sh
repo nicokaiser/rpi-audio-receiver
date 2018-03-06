@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# Install HiFiBerry sounds
-
 mkdir -p /home/pi/Music
 wget -O /home/pi/Music/beocreate-sounds.zip "http://downloads.hifiberry.com/beocreate/common/beocreate-sounds.zip"
 cd /home/pi/Music

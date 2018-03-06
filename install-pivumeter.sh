@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "Installing pivumeter"
+
 apt install --no-install-recommends -y git build-essential autoconf automake libtool libasound2-dev libfftw3-dev wiringpi
 git clone https://github.com/pimoroni/pivumeter.git
 cd pivumeter

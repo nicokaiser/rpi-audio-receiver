@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Update packages
+echo "Updating packages"
 
 apt update
 apt upgrade -y

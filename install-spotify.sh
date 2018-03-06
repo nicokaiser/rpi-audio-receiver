@@ -1,9 +1,9 @@
 #!/bin/sh
 
 apt install --no-install-recommends -y git
-wget https://github.com/Spotifyd/spotifyd/releases/download/untagged-7542bdb173909d014e1e/spotifyd-2018-02-14-armv7.zip
-unzip spotifyd-2018-02-14-armv7.zip
-rm spotifyd-2018-02-14-armv7.zip
+wget https://github.com/Spotifyd/spotifyd/releases/download/untagged-5714215a4cf45130004f/spotifyd-2018-03-03-armv6.zip
+unzip spotifyd-2018-03-03-armv6.zip
+rm spotifyd-2018-03-03-armv6.zip
 sudo mkdir -p /opt/spotifyd
 mv spotifyd /opt/spotifyd
 
@@ -24,7 +24,7 @@ cat <<'EOF' > /etc/systemd/system/spotifyd.service
 Description=Spotify Connect
 Documentation=https://github.com/Spotifyd/spotifyd
 After=network-online.target
-After=sound.target
+Requires=sound.target network-online.target
 
 [Service]
 Type=idle

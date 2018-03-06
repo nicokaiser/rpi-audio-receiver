@@ -25,8 +25,8 @@ sudo SKIP_WARNING=1 rpi-update
 
 sudo apt install -y --no-install-recommends git
 
-git clone https://github.com/nicokaiser/rpi-bluetooth-receiver.git
-cd rpi-bluetooth-receiver
+git clone https://github.com/nicokaiser/rpi-audio-receiver.git
+cd rpi-audio-receiver
 
 sudo raspi-config nonint do_hostname airpi
 sudo hostnamectl set-hostname --pretty "AirPi"

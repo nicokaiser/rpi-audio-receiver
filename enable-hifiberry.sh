@@ -42,6 +42,8 @@ pcm.!default {
   type plug
   slave.pcm "softvol"
 }
+
+pcm.front pcm.default
 EOF
 
 cat /boot/config.txt | grep -vi "dtparam=audio" | grep -vi hifiberry >/tmp/config.txt

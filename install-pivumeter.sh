@@ -49,4 +49,6 @@ pcm.!default {
   type plug
   slave.pcm "softvol_and_pivumeter"
 }
+
+pcm.front pcm.default
 EOF

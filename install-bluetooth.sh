@@ -2,7 +2,7 @@
 
 echo "Installing Bluetooth Audio (BlueALSA)"
 
-apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez python-gobject python-dbus
+apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez python-gobject python-dbus vorbis-tools sound-theme-freedesktop
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
@@ -179,25 +179,17 @@ if [[ ! $name =~ ^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$ ]]; then exit 0; fi
 action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 
 if [ "$action" = "add" ]; then
-    bluetoothctl << EOT
-discoverable off
-EOT
-    if [ -f /home/pi/Music/setup-complete.wav ]; then
-        aplay -q /home/pi/Music/setup-complete.wav
-    fi
+    echo -e 'discoverable off\nexit\n' | bluetoothctl
+    ogg123 -q /usr/share/sounds/freedesktop/stereo/device-added.oga
     # disconnect wifi to prevent dropouts
     # ifconfig wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
-    if [ -f /home/pi/Music/setup-required.wav ]; then
-        aplay -q /home/pi/Music/setup-required.wav
-    fi
+    ogg123 -q /usr/share/sounds/freedesktop/stereo/device-removed.oga
     # reenable wifi
     # ifconfig wlan0 up &
-    bluetoothctl << EOT
-discoverable on
-EOT
+    echo -e 'discoverable on\nexit\n' | bluetoothctl
 fi
 EOF
 chmod 755 /opt/local/bin/bluetooth-udev
@@ -206,3 +198,18 @@ cat <<'EOF' > /etc/udev/rules.d/99-bluetooth-udev.rules
 SUBSYSTEM=="input", GROUP="input", MODE="0660"
 KERNEL=="input[0-9]*", RUN+="/opt/local/bin/bluetooth-udev"
 EOF
+
+# Startup sound
+cat <<'EOF' > /etc/systemd/system/startup-sound.service
+[Unit]
+Description=Startup sound
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ogg123 -q /usr/share/sounds/freedesktop/stereo/service-login.oga
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable startup-sound.service

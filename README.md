@@ -75,8 +75,9 @@ sudo ./enable-read-only.sh
 ## Limitations
 
 - Only one Bluetooth device can be connected at a time, otherwise interruptions may occur.
-- The device is always open, new clients can connect at any time without authentication
+- The device is always open, new clients can connect at any time without authentication.
 - To permanently save paired devices, the Raspberry has to be switched to read-write mode (`mount -o remount,rw /`) until all devices have been paired once.
+- You might want to use a Bluetooth USB dongle or have the script disable Wi-Fi while connected (see `bluetooth-udev.sh`), as the BCM43438 (Raspberry Pi 3, Zero W) has severe problems with both switched on, see [raspberrypi/linux/#1402](https://github.com/raspberrypi/linux/issues/1402).
 
 ## References
 

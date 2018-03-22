@@ -16,7 +16,7 @@ cat <<EOF > /etc/spotifyd.conf
 backend = alsa
 mixer = Master
 volume-control = softvol # or alsa
-device_name = ${PRODUCTNAME}
+device_name = ${PRETTY_HOSTNAME}
 bitrate = 320
 EOF
 

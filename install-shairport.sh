@@ -2,7 +2,17 @@
 
 echo "Installing Shairport Sync AirPlay Audio Receiver"
 
-apt install -y --no-install-recommends shairport-sync
+apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential git libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config
+
+git clone https://github.com/mikebrady/shairport-sync.git
+cd shairport-sync && git checkout 3.1.7
+autoreconf -fi
+./configure --sysconfdir=/etc --with-alsa --with-avahi --with-ssl=openssl --with-systemd --with-metadata
+make
+make install
+cd ..
+rm -rf shairport-sync
+
 usermod -a -G gpio shairport-sync
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)

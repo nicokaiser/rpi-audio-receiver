@@ -46,6 +46,9 @@ pcm.!default {
 pcm.front pcm.default
 EOF
 
+amixer sset 'PCM' 96%
+alsactl store
+
 cat /boot/config.txt | grep -vi "dtparam=audio" | grep -vi hifiberry >/tmp/config.txt
 echo dtoverlay=hifiberry-dac >>/tmp/config.txt
 mv /tmp/config.txt /boot/config.txt

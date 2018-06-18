@@ -18,6 +18,8 @@ service bluetooth start
 hciconfig hci0 piscan
 hciconfig hci0 sspmode 1
 
+mkdir -p /opt/local/bin
+
 # Bluetooth agent
 cat <<'EOF' > /opt/local/bin/bluetooth-agent
 #!/usr/bin/python

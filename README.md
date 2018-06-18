@@ -23,6 +23,7 @@ sudo apt update -y
 sudo apt upgrade -y
 sudo SKIP_WARNING=1 rpi-update
 
+sudo apt update -y
 sudo apt install -y --no-install-recommends git
 
 git clone https://github.com/nicokaiser/rpi-audio-receiver.git

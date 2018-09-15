@@ -148,7 +148,7 @@ mkdir -p /etc/systemd/system/bluealsa.service.d
 cat <<'EOF' > /etc/systemd/system/bluealsa.service.d/override.conf
 [Service]
 ExecStart=
-ExecStart=/usr/bin/bluealsa --disable-hfp --disable-hsp
+ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink
 ExecStartPre=/bin/sleep 1
 EOF
 

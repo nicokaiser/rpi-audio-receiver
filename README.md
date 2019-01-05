@@ -8,9 +8,9 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 ## Requirements
 
-- Raspberry Pi with Bluetooth support (tested wth Raspberry Pi Zero W) or USB dongle
-- Raspbian Stretch Lite (tested with version 2017-11-29)
-- USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475) and [pHAT DAC](https://shop.pimoroni.de/products/phat-dac))
+- Raspberry Pi with Bluetooth support (tested wth Raspberry Pi 3 and Zero W) or USB dongle
+- Raspbian Stretch Lite (tested with November 2018 version)
+- USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
 
 ## Installation
 
@@ -18,20 +18,16 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 Sets hostname to `airpi`, the visible device name to `AirPi` and updates the Raspbian packages.
 
-```
-sudo apt update -y
-sudo apt upgrade -y
-sudo SKIP_WARNING=1 rpi-update
+    sudo apt update -y
+    sudo apt upgrade -y
+    sudo SKIP_WARNING=1 rpi-update
 
-sudo apt update -y
-sudo apt install -y --no-install-recommends git
+    sudo apt install -y --no-install-recommends git
+    git clone https://github.com/nicokaiser/rpi-audio-receiver.git
+    cd rpi-audio-receiver
 
-git clone https://github.com/nicokaiser/rpi-audio-receiver.git
-cd rpi-audio-receiver
-
-sudo raspi-config nonint do_hostname airpi
-sudo hostnamectl set-hostname --pretty "AirPi"
-```
+    sudo raspi-config nonint do_hostname airpi
+    sudo hostnamectl set-hostname --pretty "AirPi"
 
 ### Bluetooth
 
@@ -45,33 +41,25 @@ sudo ./install-bluetooth.sh
 
 Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.
 
-``` 
-sudo ./install-shairport.sh
-```
+    sudo ./install-shairport.sh
 
 ### Spotify Connect
 
 Installs [Spotifyd](https://github.com/Spotifyd/spotifyd), an open source Spotify client).
 
-```
-sudo ./install-spotify.sh
-```
+    sudo ./install-spotify.sh
 
 ### UPnP
 
 Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP Renderer.
 
-```
-sudo ./install-upnp.sh
-```
+    sudo ./install-upnp.sh
 
 ### Read-only mode
 
 To avoid SD card corruption when powering off, you can boot Raspbian in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.
 
-```
-sudo ./enable-read-only.sh
-```
+    sudo ./enable-read-only.sh
 
 ## Limitations
 

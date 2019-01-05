@@ -24,8 +24,10 @@ cat <<'EOF' > /etc/systemd/system/spotifyd.service
 [Unit]
 Description=Spotify Connect
 Documentation=https://github.com/Spotifyd/spotifyd
-After=network-online.target
+Wants=sound.target
 After=sound.target
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=idle

@@ -175,8 +175,7 @@ echo 'ACTION=="add", KERNEL=="hci0", RUN+="/bin/systemctl start bluealsa-aplay.s
 # Bluetooth udev script
 cat <<'EOF' > /opt/local/bin/bluetooth-udev
 #!/bin/bash
-name=$(sed 's/\"//g' <<< $NAME)
-if [[ ! $name =~ ^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$ ]]; then exit 0; fi
+if [[ ! $NAME =~ ^\"([0-9A-F]{2}[:-]){5}([0-9A-F]{2})\"$ ]]; then exit 0; fi
 
 action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 

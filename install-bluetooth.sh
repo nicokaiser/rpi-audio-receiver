@@ -182,13 +182,13 @@ action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 
 if [ "$action" = "add" ]; then
     echo -e 'discoverable off\nexit\n' | bluetoothctl
-    ogg123 -q /usr/share/sounds/freedesktop/stereo/device-added.oga
+    ogg123 -q /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg
     # disconnect wifi to prevent dropouts
     # ifconfig wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
-    ogg123 -q /usr/share/sounds/freedesktop/stereo/device-removed.oga
+    ogg123 -q /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg
     # reenable wifi
     # ifconfig wlan0 up &
     echo -e 'discoverable on\nexit\n' | bluetoothctl
@@ -202,6 +202,10 @@ KERNEL=="input[0-9]*", RUN+="/opt/local/bin/bluetooth-udev"
 EOF
 
 # Startup sound
+mkdir -p /usr/local/share/sounds/WoodenBeaver/stereo
+curl -o /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg https://raw.githubusercontent.com/madsrh/WoodenBeaver/master/WoodenBeaver/stereo/device-added.ogg
+curl -o /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg https://raw.githubusercontent.com/madsrh/WoodenBeaver/master/WoodenBeaver/stereo/device-removed.ogg
+
 cat <<'EOF' > /etc/systemd/system/startup-sound.service
 [Unit]
 Description=Startup sound
@@ -209,7 +213,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/ogg123 -q /usr/share/sounds/freedesktop/stereo/service-login.oga
+ExecStart=/usr/bin/ogg123 -q /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg
 
 [Install]
 WantedBy=multi-user.target

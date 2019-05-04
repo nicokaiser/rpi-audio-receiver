@@ -20,7 +20,6 @@ Sets hostname to `airpi`, the visible device name to `AirPi` and updates the Ras
 
     sudo apt update -y
     sudo apt upgrade -y
-    sudo SKIP_WARNING=1 rpi-update
 
     sudo apt install -y --no-install-recommends git
     git clone https://github.com/nicokaiser/rpi-audio-receiver.git
@@ -33,9 +32,7 @@ Sets hostname to `airpi`, the visible device name to `AirPi` and updates the Ras
 
 Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through [BlueALSA](https://github.com/Arkq/bluez-alsa). A udev script is installed that disables discoverability while connected.
 
-```
-sudo ./install-bluetooth.sh
-```
+    sudo ./install-bluetooth.sh
 
 ### AirPlay
 

@@ -2,9 +2,9 @@
 
 echo "Installing Spotify Connect (spotifyd)"
 
-wget https://github.com/Spotifyd/spotifyd/releases/download/v0.2.4/spotifyd-2019-01-28-armv6.zip
-unzip spotifyd-2019-01-28-armv6.zip
-rm spotifyd-2019-01-28-armv6.zip
+wget https://github.com/Spotifyd/spotifyd/releases/download/v0.2.5/spotifyd-2019-02-25-armv6.zip
+unzip spotifyd-2019-02-25-armv6.zip
+rm spotifyd-2019-02-25-armv6.zip
 mkdir -p /opt/local/bin
 mv spotifyd /opt/local/bin
 

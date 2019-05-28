@@ -44,6 +44,10 @@ Installs [Spotifyd](https://github.com/Spotifyd/spotifyd), an open source Spotif
 
 Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP Renderer.
 
+### Snapcast
+
+Installs [snapclient](https://github.com/badaix/snapcast), the client component of the Snapcast Synchronous multi-room audio player.
+
 ### Read-only mode
 
 To avoid SD card corruption when powering off, you can boot Raspbian in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.
@@ -61,5 +65,6 @@ To avoid SD card corruption when powering off, you can boot Raspbian in read-onl
 - [Shairport Sync: AirPlay Audio Receiver](https://github.com/mikebrady/shairport-sync)
 - [Spotifyd: open source Spotify client](https://github.com/Spotifyd/spotifyd)
 - [gmrender-resurrect: Headless UPnP Renderer](http://github.com/hzeller/gmrender-resurrect)
+- [Snapcast: Synchronous audio player](https://github.com/badaix/snapcast)
 - [pivumeter: ALSA plugin for displaying VU meters on various Raspberry Pi add-ons](https://github.com/pimoroni/pivumeter)
 - [Adafruit: Read-Only Raspberry Pi](https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/blob/master/read-only-fs.sh)

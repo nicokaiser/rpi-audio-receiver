@@ -14,49 +14,39 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 ## Installation
 
-### Basic setup
-
-Sets hostname to `airpi`, the visible device name to `AirPi` and updates the Raspbian packages.
+The installation script asks whether to install each component.
 
     sudo apt update -y
     sudo apt upgrade -y
-
     sudo apt install -y --no-install-recommends git
+
     git clone https://github.com/nicokaiser/rpi-audio-receiver.git
     cd rpi-audio-receiver
+    ./install.sh
 
-    sudo raspi-config nonint do_hostname airpi
-    sudo hostnamectl set-hostname --pretty "AirPi"
+### Basic setup
+
+Sets hostname to e.g. `airpi`, the visible device name ("pretty hostname") to `AirPi`.
 
 ### Bluetooth
 
 Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through [BlueALSA](https://github.com/Arkq/bluez-alsa). A udev script is installed that disables discoverability while connected.
 
-    sudo ./install-bluetooth.sh
-
 ### AirPlay
 
 Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.
-
-    sudo ./install-shairport.sh
 
 ### Spotify Connect
 
 Installs [Spotifyd](https://github.com/Spotifyd/spotifyd), an open source Spotify client).
 
-    sudo ./install-spotify.sh
-
 ### UPnP
 
 Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP Renderer.
 
-    sudo ./install-upnp.sh
-
 ### Read-only mode
 
 To avoid SD card corruption when powering off, you can boot Raspbian in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.
-
-    sudo ./enable-read-only.sh
 
 ## Limitations
 

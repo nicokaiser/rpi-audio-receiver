@@ -1,17 +1,23 @@
-#!/bin/sh
+#!/bin/bash -e
 
-echo "Installing Shairport Sync AirPlay Audio Receiver"
+SHAIRPORT_VERSION=3.3
 
-apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential git libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config
+echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport-sync v${SHAIRPORT_VERSION})? [y/N] "
+read REPLY
+if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-git clone https://github.com/mikebrady/shairport-sync.git
-cd shairport-sync && git checkout 3.2.2
+apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config
+
+wget -O shairport_sync-v${SHAIRPORT_VERSION}.tar.gz https://github.com/mikebrady/shairport-sync/archive/${SHAIRPORT_VERSION}.tar.gz
+tar xzf shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
+rm shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
+cd shairport-sync-${SHAIRPORT_VERSION}
 autoreconf -fi
 ./configure --sysconfdir=/etc --with-alsa --with-avahi --with-ssl=openssl --with-systemd --with-metadata
 make
 make install
 cd ..
-rm -rf shairport-sync
+rm -rf shairport-sync-${SHAIRPORT_VERSION}
 
 usermod -a -G gpio shairport-sync
 

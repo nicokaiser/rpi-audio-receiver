@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash -e
+
+echo -n "Do you want to read-only mode? [y/N] "
+read REPLY
+if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/read-only-fs.sh
 bash read-only-fs.sh

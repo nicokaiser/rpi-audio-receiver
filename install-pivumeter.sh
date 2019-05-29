@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/bash -e
 
-echo "Installing pivumeter"
+echo -n "Do you want to install ALSA VU meter plugin (pivumeter) [y/N] "
+read REPLY
+if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 apt install --no-install-recommends -y git build-essential autoconf automake libtool libasound2-dev libfftw3-dev wiringpi
 git clone https://github.com/pimoroni/pivumeter.git

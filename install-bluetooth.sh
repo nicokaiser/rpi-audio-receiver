@@ -1,8 +1,19 @@
-#!/bin/sh
+#!/bin/bash -e
 
-echo "Installing Bluetooth Audio (BlueALSA)"
+echo -n "Do you want to install Bluetooth Audio (BlueALSA)? [y/N] "
+read REPLY
+if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez python-gobject python-dbus vorbis-tools sound-theme-freedesktop
+
+# WoodenBeaver sounds
+mkdir -p /usr/local/share/sounds/WoodenBeaver/stereo
+if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg ]; then
+    curl -so /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg https://raw.githubusercontent.com/madsrh/WoodenBeaver/master/WoodenBeaver/stereo/device-added.ogg
+fi
+if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg ]; then
+    curl -so /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg https://raw.githubusercontent.com/madsrh/WoodenBeaver/master/WoodenBeaver/stereo/device-removed.ogg
+fi
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
@@ -17,6 +28,8 @@ EOF
 service bluetooth start
 hciconfig hci0 piscan
 hciconfig hci0 sspmode 1
+
+mkdir -p /opt/local/bin
 
 # Bluetooth agent
 cat <<'EOF' > /opt/local/bin/bluetooth-agent
@@ -146,7 +159,7 @@ mkdir -p /etc/systemd/system/bluealsa.service.d
 cat <<'EOF' > /etc/systemd/system/bluealsa.service.d/override.conf
 [Service]
 ExecStart=
-ExecStart=/usr/bin/bluealsa --disable-hfp --disable-hsp
+ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink
 ExecStartPre=/bin/sleep 1
 EOF
 
@@ -180,13 +193,17 @@ action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 
 if [ "$action" = "add" ]; then
     echo -e 'discoverable off\nexit\n' | bluetoothctl
-    ogg123 -q /usr/share/sounds/freedesktop/stereo/device-added.oga
+    if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg ]; then
+        ogg123 -q /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg
+    fi
     # disconnect wifi to prevent dropouts
     # ifconfig wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
-    ogg123 -q /usr/share/sounds/freedesktop/stereo/device-removed.oga
+    if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg ]; then
+        ogg123 -q /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg
+    fi
     # reenable wifi
     # ifconfig wlan0 up &
     echo -e 'discoverable on\nexit\n' | bluetoothctl
@@ -198,18 +215,3 @@ cat <<'EOF' > /etc/udev/rules.d/99-bluetooth-udev.rules
 SUBSYSTEM=="input", GROUP="input", MODE="0660"
 KERNEL=="input[0-9]*", RUN+="/opt/local/bin/bluetooth-udev"
 EOF
-
-# Startup sound
-cat <<'EOF' > /etc/systemd/system/startup-sound.service
-[Unit]
-Description=Startup sound
-After=multi-user.target
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/ogg123 -q /usr/share/sounds/freedesktop/stereo/service-login.oga
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl enable startup-sound.service

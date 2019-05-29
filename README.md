@@ -48,6 +48,10 @@ Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP
 
 Installs [snapclient](https://github.com/badaix/snapcast), the client component of the Snapcast Synchronous multi-room audio player.
 
+### /dev/zero playback
+
+Some DACs tend to produce popping/clicking noises when switching from or to stand-by (i.e. when no sound is played). An optional `aplay` service can be installed which always streams an empty bytestream to the DAC. This consumes some CPU but avoids clicks.
+
 ### Read-only mode
 
 To avoid SD card corruption when powering off, you can boot Raspbian in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-SHAIRPORT_VERSION=3.3
+SHAIRPORT_VERSION=3.3.1
 
 echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport-sync v${SHAIRPORT_VERSION})? [y/N] "
 read REPLY

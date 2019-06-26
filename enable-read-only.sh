@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-echo -n "Do you want to read-only mode? [y/N] "
+echo -n "Do you want to enable read-only mode? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 

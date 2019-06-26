@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-echo -n "Do you want to install UPnP renderer (gmrender-resurrect)? [Y/n] "
+echo -n "Do you want to install UPnP renderer (gmrender-resurrect)? [y/N] "
 read REPLY
-if [[ "$REPLY" =~ ^(no|n|N)$ ]]; then exit 0; fi
+if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 apt install -y --no-install-recommends gmediarender gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-alsa
 

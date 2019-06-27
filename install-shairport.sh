@@ -6,14 +6,14 @@ echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config
+apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config libsoxr0 libsoxr-dev
 
 wget -O shairport_sync-v${SHAIRPORT_VERSION}.tar.gz https://github.com/mikebrady/shairport-sync/archive/${SHAIRPORT_VERSION}.tar.gz
 tar xzf shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
 rm shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
 cd shairport-sync-${SHAIRPORT_VERSION}
 autoreconf -fi
-./configure --sysconfdir=/etc --with-alsa --with-avahi --with-ssl=openssl --with-systemd --with-metadata
+./configure --sysconfdir=/etc --with-alsa --with-avahi --with-ssl=openssl --with-systemd --with-soxr
 make
 make install
 cd ..
@@ -35,10 +35,7 @@ alsa = {
 
 metadata =
 {
-  enabled = "yes";
-  include_cover_art = "yes";
-  pipe_name = "/tmp/shairport-sync-metadata";
-  pipe_timeout = 5000;
+  enabled = "no";
 };
 
 sessioncontrol = {

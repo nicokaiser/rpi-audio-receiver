@@ -29,10 +29,8 @@ service bluetooth start
 hciconfig hci0 piscan
 hciconfig hci0 sspmode 1
 
-mkdir -p /opt/local/bin
-
 # Bluetooth agent
-cat <<'EOF' > /opt/local/bin/bluetooth-agent
+cat <<'EOF' > /usr/local/bin/bluetooth-agent
 #!/usr/bin/python
 
 # Automatically authenticating bluez agent.
@@ -134,7 +132,7 @@ if __name__ == '__main__':
 
     mainloop.run()
 EOF
-chmod 755 /opt/local/bin/bluetooth-agent
+chmod 755 /usr/local/bin/bluetooth-agent
 
 cat <<'EOF' > /etc/systemd/system/bluetooth-agent.service
 [Unit]
@@ -147,7 +145,7 @@ WantedBy=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/opt/local/bin/bluetooth-agent
+ExecStart=/usr/local/bin/bluetooth-agent
 EOF
 systemctl enable bluetooth-agent.service
 
@@ -184,7 +182,7 @@ systemctl enable bluealsa-aplay
 echo 'ACTION=="add", KERNEL=="hci0", RUN+="/bin/systemctl start bluealsa-aplay.service"' > /etc/udev/rules.d/61-bluealsa-aplay.rules
 
 # Bluetooth udev script
-cat <<'EOF' > /opt/local/bin/bluetooth-udev
+cat <<'EOF' > /usr/local/bin/bluetooth-udev
 #!/bin/bash
 if [[ ! $NAME =~ ^\"([0-9A-F]{2}[:-]){5}([0-9A-F]{2})\"$ ]]; then exit 0; fi
 
@@ -208,9 +206,9 @@ if [ "$action" = "remove" ]; then
     echo -e 'discoverable on\nexit\n' | bluetoothctl
 fi
 EOF
-chmod 755 /opt/local/bin/bluetooth-udev
+chmod 755 /usr/local/bin/bluetooth-udev
 
 cat <<'EOF' > /etc/udev/rules.d/99-bluetooth-udev.rules
 SUBSYSTEM=="input", GROUP="input", MODE="0660"
-KERNEL=="input[0-9]*", RUN+="/opt/local/bin/bluetooth-udev"
+KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluetooth-udev"
 EOF

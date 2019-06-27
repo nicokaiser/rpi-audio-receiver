@@ -9,7 +9,7 @@ Devices like phones, tablets and computers can play audio via this receiver.
 ## Requirements
 
 - Raspberry Pi with Bluetooth support (tested wth Raspberry Pi 3 and Zero W) or USB dongle
-- Raspbian Stretch Lite (tested with November 2018 version)
+- Raspbian Buster Lite (tested with June 2019 version)
 - USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
 
 ## Installation

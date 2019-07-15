@@ -33,11 +33,6 @@ alsa = {
 //  mixer_control_name = "Master";
 }
 
-metadata =
-{
-  enabled = "no";
-};
-
 sessioncontrol = {
   wait_for_completion = "no";
   allow_session_interruption = "yes";

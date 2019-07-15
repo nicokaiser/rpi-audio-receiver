@@ -4,19 +4,37 @@ echo -n "Do you want to enable read-only mode? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/read-only-fs.sh
-bash read-only-fs.sh
+# Disable swapfile
+dphys-swapfile swapoff
+dphys-swapfile uninstall
+systemctl disable dphys-swapfile.service
 
-rm -rf /var/lib/dhcpcd5
-ln -s /tmp /var/lib/dhcpcd5
-systemctl disable apt-daily-upgrade.service
+# Remove unwanted packages
+apt-get remove -y --purge triggerhappy logrotate dphys-swapfile fake-hwclock
+apt-get autoremove -y --purge
+apt-get install -y busybox-syslogd
+dpkg --purge rsyslog
+
+# Disable apt activities
 systemctl disable apt-daily-upgrade.timer
+systemctl disable apt-daily.timer
+systemctl disable man-db.timer
 
-rm /var/lib/systemd/random-seed
-ln -s /tmp/random-seed /var/lib/systemd/random-seed
+# Move resolv.conf to /run
+mv /etc/resolv.conf /run/resolvconf/resolv.conf
+ln -s /run/resolvconf/resolv.conf /etc/resolv.conf
 
-mkdir -p /etc/systemd/system/systemd-random-seed.service.d/
-cat <<'EOF' > /etc/systemd/system/systemd-random-seed.service.d/override.conf
-[Service]
-ExecStartPre=/bin/sh -c "echo '' > /tmp/random-seed"
+# Adjust kernel command line
+sed -i.backup -e 's/rootwait$/rootwait fsck.mode=skip noswap ro/' /boot/cmdline.txt
+
+# Edit the file system table
+sed -i.backup -e 's/vfat\s*defaults\s/vfat defaults,ro/; s/ext4\s*defaults,noatime\s/ext4 defaults,noatime,ro/' /etc/fstab
+
+# Make edits to fstab
+cat <<'EOF' >> /etc/fstab
+tmpfs /tmp tmpfs mode=1777,nosuid,nodev 0 0
+tmpfs /var/tmp tmpfs mode=1777,nosuid,nodev 0 0
+tmpfs /var/spool tmpfs mode=0755,nosuid,nodev 0 0
+tmpfs /var/log tmpfs mode=0755,nosuid,nodev 0 0
+tmpfs /var/lib/dhcpcd5 tmpfs mode=0755,nosuid,nodev 0 0
 EOF

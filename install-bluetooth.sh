@@ -145,6 +145,8 @@ WantedBy=multi-user.target
 
 [Service]
 Type=simple
+ExecStartPre=/usr/bin/hciconfig hci0 piscan
+ExecStartPre=/usr/bin/hciconfig hci0 sspmode 1
 ExecStart=/usr/local/bin/bluetooth-agent
 EOF
 systemctl enable bluetooth-agent.service

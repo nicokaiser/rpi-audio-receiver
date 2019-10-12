@@ -192,7 +192,7 @@ action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 
 if [ "$action" = "add" ]; then
     echo -e 'discoverable off\nexit\n' | bluetoothctl
-    if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg ]; then
+    if [ -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg ]; then
         ogg123 -q /usr/local/share/sounds/WoodenBeaver/stereo/device-added.ogg
     fi
     # disconnect wifi to prevent dropouts
@@ -200,7 +200,7 @@ if [ "$action" = "add" ]; then
 fi
 
 if [ "$action" = "remove" ]; then
-    if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg ]; then
+    if [ -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg ]; then
         ogg123 -q /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.ogg
     fi
     # reenable wifi

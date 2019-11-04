@@ -138,10 +138,10 @@ cat <<'EOF' > /etc/systemd/system/bluetooth-agent.service
 [Unit]
 Description=Bluetooth Agent
 Requires=bluetooth.service
-After=bluetooth.target bluetooth.service
+After=bluetooth.service
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=bluetooth.target
 
 [Service]
 Type=simple

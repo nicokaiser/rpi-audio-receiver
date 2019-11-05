@@ -148,6 +148,8 @@ Type=simple
 ExecStartPre=/bin/hciconfig hci0 piscan
 ExecStartPre=/bin/hciconfig hci0 sspmode 1
 ExecStart=/usr/local/bin/bluetooth-agent
+Restart=always
+RestartSec=10
 EOF
 systemctl enable bluetooth-agent.service
 

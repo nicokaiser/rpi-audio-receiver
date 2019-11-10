@@ -9,10 +9,10 @@ apt install -y --no-install-recommends alsa-base bluealsa python-gobject python-
 # WoodenBeaver sounds
 mkdir -p /usr/local/share/sounds/rpi-audio-receiver
 if [ ! -f /usr/local/share/sounds/rpi-audio-receiver/device-added.wav ]; then
-    curl -so /usr/local/share/sounds/rpi-audio-receiver/device-added.wav https://raw.githubusercontent.com/yanone/rpi-audio-receiver/master/device-added.wav
+    curl -so /usr/local/share/sounds/rpi-audio-receiver/device-added.wav https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/master/device-added.wav
 fi
 if [ ! -f /usr/local/share/sounds/rpi-audio-receiver/device-removed.wav ]; then
-    curl -so /usr/local/share/sounds/rpi-audio-receiver/device-removed.wav https://raw.githubusercontent.com/yanone/rpi-audio-receiver/master/device-removed.wav
+    curl -so /usr/local/share/sounds/rpi-audio-receiver/device-removed.wav https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/master/device-removed.wav
 fi
 
 # Bluetooth settings

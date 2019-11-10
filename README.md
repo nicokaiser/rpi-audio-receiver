@@ -20,7 +20,7 @@ The installation script asks whether to install each component.
     sudo apt upgrade -y
     sudo apt install -y --no-install-recommends git
 
-    git clone https://github.com/yanone/rpi-audio-receiver.git
+    git clone https://github.com/nicokaiser/rpi-audio-receiver.git
     cd rpi-audio-receiver
     ./install.sh
 

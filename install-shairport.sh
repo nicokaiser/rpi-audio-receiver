@@ -17,7 +17,7 @@ rm shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
 cd shairport-sync-${SHAIRPORT_VERSION}
 autoreconf -fi
 # left two options included as the script below determines them
-./configure --sysconfdir="${SHAIRPORT_SYSCONFDIR}" --with-systemd "${SHAIRPORT_CONFIGURE}"
+./configure --sysconfdir="${SHAIRPORT_SYSCONFDIR}" --with-systemd ${SHAIRPORT_CONFIGURE}
 make
 make install
 cd ..

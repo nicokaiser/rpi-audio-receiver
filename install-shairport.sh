@@ -1,6 +1,9 @@
 #!/bin/bash -e
 
-SHAIRPORT_VERSION=3.3.1
+# these are defaults, but can be overridden by setting them before running
+: "${SHAIRPORT_VERSION:=3.3.1}"
+: "${SHAIRPORT_SYSCONFDIR:=/etc}"
+: "${SHAIRPORT_CONFIGURE:=--with-alsa --with-avahi --with-ssl=openssl --with-soxr}"
 
 echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport-sync v${SHAIRPORT_VERSION})? [y/N] "
 read REPLY
@@ -13,7 +16,8 @@ tar xzf shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
 rm shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
 cd shairport-sync-${SHAIRPORT_VERSION}
 autoreconf -fi
-./configure --sysconfdir=/etc --with-alsa --with-avahi --with-ssl=openssl --with-systemd --with-soxr
+# left two options included as the script below determines them
+./configure --sysconfdir="${SHAIRPORT_SYSCONFDIR}" --with-systemd "${SHAIRPORT_CONFIGURE}"
 make
 make install
 cd ..
@@ -24,7 +28,7 @@ usermod -a -G gpio shairport-sync
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
-cat <<EOF > /etc/shairport-sync.conf
+cat <<EOF > "${SHAIRPORT_SYSCONFDIR}/shairport-sync.conf"
 general = {
   name = "${PRETTY_HOSTNAME}";
 }

@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # these are defaults, but can be overridden by setting them before running
-: "${SHAIRPORT_VERSION:=3.3.1}"
+: "${SHAIRPORT_VERSION:=3.3.5}"
 : "${SHAIRPORT_SYSCONFDIR:=/etc}"
 : "${SHAIRPORT_CONFIGURE:=--with-alsa --with-avahi --with-ssl=openssl --with-soxr}"
 

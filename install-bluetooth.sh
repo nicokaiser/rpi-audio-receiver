@@ -6,14 +6,8 @@ if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 apt install -y --no-install-recommends alsa-base alsa-utils bluealsa python-gobject python-dbus
 
-# WoodenBeaver sounds
-mkdir -p /usr/local/share/sounds/WoodenBeaver/stereo
-if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav ]; then
-    curl -so /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/master/device-added.wav
-fi
-if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav ]; then
-    curl -so /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/master/device-removed.wav
-fi
+#  Device connection sounds
+mkdir /home/pi/rpi-audio-receiver/sounds
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
@@ -194,17 +188,14 @@ action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 
 if [ "$action" = "add" ]; then
     echo -e 'discoverable off\nexit\n' | bluetoothctl
-    if [ -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav ]; then
-        aplay -q /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav
-    fi
+    aplay -q /home/pi/rpi-audio-receiver/sounds/connect.wav
+   
     # disconnect wifi to prevent dropouts
     # ifconfig wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
-    if [ -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav ]; then
-        aplay -q /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav
-    fi
+    aplay -q /home/pi/rpi-audio-receiver/sounds/disconnect.wav
     # reenable wifi
     # ifconfig wlan0 up &
     echo -e 'discoverable on\nexit\n' | bluetoothctl

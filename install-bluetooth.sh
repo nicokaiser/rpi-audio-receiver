@@ -6,8 +6,6 @@ if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 apt install -y --no-install-recommends alsa-base alsa-utils bluealsa python-gobject python-dbus
 
-#  Device connection sounds
-mkdir /home/pi/rpi-audio-receiver/sounds
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf

@@ -14,6 +14,7 @@ sudo apt update
 sudo apt upgrade -y
 
 echo "Installing components"
+mkdir /home/pi/rpi-audio-receiver/sounds
 sudo ./install-bluetooth.sh
 sudo ./install-shairport.sh
 sudo ./install-spotify.sh

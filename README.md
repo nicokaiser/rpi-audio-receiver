@@ -30,6 +30,7 @@ Sets hostname to e.g. `airpi`, the visible device name ("pretty hostname") to `A
 
 ### Bluetooth
 
+If you want to add custom connection sounds please add wav files under the sounds dir..
 Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through [BlueALSA](https://github.com/Arkq/bluez-alsa). A udev script is installed that disables discoverability while connected.
 
 ### AirPlay

@@ -1,5 +1,13 @@
 #!/bin/sh
 
+echo -n "Do you want to enable HiFiBerry device tree overlay and ALSA configuration? [y/N] "
+read REPLY
+if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+
+echo -n "Which board do you want to enable? [dac/dacplus/digi/amp] "
+read CARD
+if [[ ! "$CARD" =~ ^(dac|dacplus|digi|amp)$ ]]; then exit 1; fi
+
 cat <<'EOF' > /etc/asound.conf
 defaults.pcm.card 0
 defaults.ctl.card 0
@@ -50,5 +58,5 @@ amixer sset 'Softvol' 100%
 alsactl store
 
 cat /boot/config.txt | grep -vi "dtparam=audio" | grep -vi hifiberry >/tmp/config.txt
-echo dtoverlay=hifiberry-dac >>/tmp/config.txt
+echo dtoverlay=hifiberry-${CARD} >>/tmp/config.txt
 mv /tmp/config.txt /boot/config.txt

@@ -4,7 +4,7 @@ echo -n "Do you want to enable HiFiBerry device tree overlay and ALSA configurat
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-echo -n "Which board do you want to enable? [dac/dacplus/digi/amp] "
+echo -n "Which board do you want to enable? [dac/dacplus/dacplusadc/dacplusadcpro/dacplusdsp/digi/digipro/amp] "
 read CARD
 if [[ ! "$CARD" =~ ^(dac|dacplus|digi|amp)$ ]]; then exit 1; fi
 

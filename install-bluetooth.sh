@@ -25,15 +25,30 @@ DiscoverableTimeout = 0
 AutoEnable=true
 EOF
 
-service bluetooth start
-hciconfig hci0 piscan
-hciconfig hci0 sspmode 1
+# Bluetooth hardware initialization
+cat <<'EOF' > /etc/systemd/system/btinterface.service
+[Unit]
+Description=Bluetooth hardware initialisiation
+After=bluetooth.service
+Before=bluealsa.service
+
+[Service]
+Type=oneshot
+ExecStart=sleep 5
+ExecStartPost=/usr/bin/hciconfig hci0 up
+ExecStartPost=/usr/bin/bluetoothctl power on
+ExecStartPost=/usr/bin/bluetoothctl discoverable on
+ExecStartPost=/usr/bin/hciconfig hci0 piscan
+ExecStartPost=/usr/bin/hciconfig hci0 sspmode 1
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable btinterface.service
 
 # Bluetooth agent
-cat <<'EOF' > /usr/local/bin/bluetooth-agent
+cat <<'EOF' > /usr/local/bin/a2dp-agent.py
 #!/usr/bin/python
-
-# Automatically authenticating bluez agent.
 
 from __future__ import absolute_import, print_function, unicode_literals
 
@@ -44,7 +59,6 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
-BUS_NAME = 'org.bluez'
 AGENT_INTERFACE = 'org.bluez.Agent1'
 AGENT_PATH = "/test/agent"
 
@@ -115,43 +129,36 @@ if __name__ == '__main__':
 
     bus = dbus.SystemBus()
 
-    capability = "NoInputNoOutput"
+    agent = Agent(bus, AGENT_PATH)
 
-    path = "/test/agent"
-    agent = Agent(bus, path)
+    obj = bus.get_object("org.bluez", "/org/bluez");
+    manager = dbus.Interface(obj, "org.bluez.AgentManager1")
+    manager.RegisterAgent(AGENT_PATH, "NoInputNoOutput")
+
+    print("A2DP Agent registered")
+
+    manager.RequestDefaultAgent(AGENT_PATH)
 
     mainloop = GObject.MainLoop()
-
-    obj = bus.get_object(BUS_NAME, "/org/bluez");
-    manager = dbus.Interface(obj, "org.bluez.AgentManager1")
-    manager.RegisterAgent(path, capability)
-
-    print("Agent registered")
-
-    manager.RequestDefaultAgent(path)
-
     mainloop.run()
 EOF
-chmod 755 /usr/local/bin/bluetooth-agent
+chmod 755 /usr/local/bin/a2dp-agent.py
 
-cat <<'EOF' > /etc/systemd/system/bluetooth-agent.service
+cat <<'EOF' > /etc/systemd/system/a2dp-agent.service
 [Unit]
-Description=Bluetooth Agent
+Description=Bluetooth A2DP Agent
 Requires=bluetooth.service
 After=bluetooth.service
 
-[Install]
-WantedBy=bluetooth.target
-
 [Service]
-Type=simple
-ExecStartPre=/bin/hciconfig hci0 piscan
-ExecStartPre=/bin/hciconfig hci0 sspmode 1
-ExecStart=/usr/local/bin/bluetooth-agent
+ExecStart=/usr/local/bin/a2dp-agent.py
+RestartSec=5
 Restart=always
-RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
 EOF
-systemctl enable bluetooth-agent.service
+systemctl enable a2dp-agent.service
 
 # ALSA settings
 sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf
@@ -162,28 +169,29 @@ cat <<'EOF' > /etc/systemd/system/bluealsa.service.d/override.conf
 [Service]
 ExecStart=
 ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink
-ExecStartPre=/bin/sleep 1
+RestartSec=5
+Restart=always
 EOF
 
 cat <<'EOF' > /etc/systemd/system/bluealsa-aplay.service
 [Unit]
-Description=BlueALSA player
-Requires=bluealsa.service
-After=bluealsa.service
-Wants=bluetooth.target sound.target
+Description=BlueALSA aplay
+Requires=bluealsa.service btinterface.service
+After=bluealsa.service sound.target btinterface.service
 
 [Service]
 Type=simple
 User=root
 ExecStartPre=/bin/sleep 2
 ExecStart=/usr/bin/bluealsa-aplay --pcm-buffer-time=250000 00:00:00:00:00:00
+RestartSec=5
+Restart=always
 
 [Install]
-WantedBy=graphical.target
+WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
 systemctl enable bluealsa-aplay
-echo 'ACTION=="add", KERNEL=="hci0", RUN+="/bin/systemctl start bluealsa-aplay.service"' > /etc/udev/rules.d/61-bluealsa-aplay.rules
 
 # Bluetooth udev script
 cat <<'EOF' > /usr/local/bin/bluetooth-udev
@@ -193,12 +201,12 @@ if [[ ! $NAME =~ ^\"([0-9A-F]{2}[:-]){5}([0-9A-F]{2})\"$ ]]; then exit 0; fi
 action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 
 if [ "$action" = "add" ]; then
-    echo -e 'discoverable off\nexit\n' | bluetoothctl
+    bluetoothctl discoverable off
     if [ -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav ]; then
         aplay -q /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav
     fi
     # disconnect wifi to prevent dropouts
-    # ifconfig wlan0 down &
+    #ifconfig wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
@@ -206,8 +214,8 @@ if [ "$action" = "remove" ]; then
         aplay -q /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav
     fi
     # reenable wifi
-    # ifconfig wlan0 up &
-    echo -e 'discoverable on\nexit\n' | bluetoothctl
+    #ifconfig wlan0 up &
+    bluetoothctl discoverable on
 fi
 EOF
 chmod 755 /usr/local/bin/bluetooth-udev

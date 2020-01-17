@@ -49,7 +49,6 @@ export SHAIRPORT_CONFIGURE="--with-stdout --with-metadata --with-avahi --with-ss
 sudo ./install-shairport.sh
 ```
 
-
 ### Spotify Connect
 
 Installs [Spotifyd](https://github.com/Spotifyd/spotifyd), an open source Spotify client).
@@ -62,10 +61,6 @@ Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP
 
 Installs [snapclient](https://github.com/badaix/snapcast), the client component of the Snapcast Synchronous multi-room audio player.
 
-### /dev/zero playback
-
-Some DACs tend to produce popping/clicking noises when switching from or to stand-by (i.e. when no sound is played). An optional `aplay` service can be installed which always streams an empty bytestream to the DAC. This consumes some CPU but avoids clicks.
-
 ### Read-only mode
 
 To avoid SD card corruption when powering off, you can boot Raspbian in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.
@@ -76,6 +71,7 @@ To avoid SD card corruption when powering off, you can boot Raspbian in read-onl
 - The device is always open, new clients can connect at any time without authentication.
 - To permanently save paired devices, the Raspberry has to be switched to read-write mode (`mount -o remount,rw /`) until all devices have been paired once.
 - You might want to use a Bluetooth USB dongle or have the script disable Wi-Fi while connected (see `bluetooth-udev.sh`), as the BCM43438 (Raspberry Pi 3, Zero W) has severe problems with both switched on, see [raspberrypi/linux/#1402](https://github.com/raspberrypi/linux/issues/1402).
+- The Pi Zero may not be powerful enough to play 192 kHz audio, you may want to change the values in `/etc/asound.conf` accordingly.
 
 ## Disclaimer
 

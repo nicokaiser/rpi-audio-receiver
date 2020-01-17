@@ -19,8 +19,8 @@ PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 cat <<EOF > /etc/spotifyd.conf
 [global]
 backend = alsa
-mixer = Master
-volume-control = softvol # or alsa
+mixer = Softvol
+volume-control = softvol # alsa
 device_name = ${PRETTY_HOSTNAME}
 bitrate = 320
 EOF

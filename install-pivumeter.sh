@@ -12,28 +12,30 @@ autoconf && automake --add-missing
 ./configure && make
 make install
 
-cat <<'EOF' > /etc/asound.conf.pivumeter
+cat <<'EOF' > /etc/asound.conf
+defaults.pcm.card 0
+defaults.ctl.card 0
+
 pcm.hifiberry {
   type hw
   card 0
   device 0
 }
-
 pcm.pivumeter {
   type meter
   slave.pcm "hifiberry"
   scopes.0 pivumeter
 }
-
 pcm.softvol_and_pivumeter {
   type softvol
   slave.pcm "pivumeter"
   control {
-    name "Master"
+    name "Softvol"
     card 0
   }
+  min_dB -90.2
+  max_dB 0.0
 }
-
 pcm_scope.pivumeter {
   type pivumeter
   decay_ms 500
@@ -42,15 +44,14 @@ pcm_scope.pivumeter {
   bar_reverse 0
   output_device blinkt
 }
-
 pcm_scope_type.pivumeter {
   lib /usr/local/lib/libpivumeter.so
 }
-
 pcm.!default {
   type plug
   slave.pcm "softvol_and_pivumeter"
 }
-
-pcm.front pcm.default
 EOF
+
+amixer sset 'Softvol' 100%
+alsactl store

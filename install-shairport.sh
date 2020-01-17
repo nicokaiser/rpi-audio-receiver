@@ -34,11 +34,10 @@ general = {
 }
 
 alsa = {
-//  mixer_control_name = "Master";
+//  mixer_control_name = "Softvol";
 }
 
 sessioncontrol = {
-  wait_for_completion = "no";
   allow_session_interruption = "yes";
   session_timeout = 20;
 };

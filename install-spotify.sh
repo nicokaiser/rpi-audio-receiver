@@ -33,7 +33,7 @@ After=network.target sound.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/spotifyd --config /etc/spotifyd.conf --no-daemon
+ExecStart=/usr/local/bin/spotifyd --no-daemon
 Restart=always
 RestartSec=5
 

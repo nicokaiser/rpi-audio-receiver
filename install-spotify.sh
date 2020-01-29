@@ -1,15 +1,15 @@
 #!/bin/bash -e
 
-SPOTIFYD_VERSION=0.2.5
-SPOTIFYD_BUILD=2019-02-25
+SPOTIFYD_VERSION=0.2.24
+ARCH=armhf # Change to armv6 for Raspberry Pi 1/Zero
 
 echo -n "Do you want to install Spotify Connect (spotifyd v${SPOTIFYD_VERSION})? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-wget https://github.com/Spotifyd/spotifyd/releases/download/v${SPOTIFYD_VERSION}/spotifyd-${SPOTIFYD_BUILD}-armv6.zip
-unzip spotifyd-${SPOTIFYD_BUILD}-armv6.zip
-rm spotifyd-${SPOTIFYD_BUILD}-armv6.zip
+wget https://github.com/Spotifyd/spotifyd/releases/download/v${SPOTIFYD_VERSION}/spotifyd-linux-${ARCH}-slim.tar.gz
+tar -xvzf spotifyd-linux-${ARCH}-slim.tar.gz
+rm spotifyd-linux-${ARCH}-slim.tar.gz
 mkdir -p /usr/local/bin
 mv spotifyd /usr/local/bin
 
@@ -27,7 +27,8 @@ EOF
 
 cat <<'EOF' > /etc/systemd/system/spotifyd.service
 [Unit]
-Description=Spotify Connect
+Description=A spotify playing daemon
+Documentation=https://github.com/Spotifyd/spotifyd
 Wants=network-online.target
 After=network.target sound.target
 

@@ -35,11 +35,11 @@ Before=bluealsa.service
 [Service]
 Type=oneshot
 ExecStart=sleep 5
-ExecStartPost=/usr/bin/hciconfig hci0 up
+ExecStartPost=/bin/hciconfig hci0 up
 ExecStartPost=/usr/bin/bluetoothctl power on
 ExecStartPost=/usr/bin/bluetoothctl discoverable on
-ExecStartPost=/usr/bin/hciconfig hci0 piscan
-ExecStartPost=/usr/bin/hciconfig hci0 sspmode 1
+ExecStartPost=/bin/hciconfig hci0 piscan
+ExecStartPost=/bin/hciconfig hci0 sspmode 1
 
 [Install]
 WantedBy=multi-user.target

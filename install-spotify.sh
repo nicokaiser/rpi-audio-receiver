@@ -13,7 +13,7 @@ rm spotifyd-linux-${ARCH}-slim.tar.gz
 mkdir -p /usr/local/bin
 mv spotifyd /usr/local/bin
 
-PRETTY_HOSTNAME=$(hostnamectl status --pretty)
+PRETTY_HOSTNAME=$(hostnamectl status --pretty | tr ' ' '-')
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
 cat <<EOF > /etc/spotifyd.conf

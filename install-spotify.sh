@@ -1,14 +1,14 @@
 #!/bin/bash -e
 
-SPOTIFYD_VERSION=0.2.24
+# SPOTIFYD_VERSION=0.2.24
 ARCH=armhf # Change to armv6 for Raspberry Pi 1/Zero
 
 echo -n "Do you want to install Spotify Connect (spotifyd v${SPOTIFYD_VERSION})? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-wget https://github.com/Spotifyd/spotifyd/releases/download/v${SPOTIFYD_VERSION}/spotifyd-linux-${ARCH}-slim.tar.gz
-tar -xvzf spotifyd-linux-${ARCH}-slim.tar.gz
+# wget https://github.com/Spotifyd/spotifyd/releases/download/v${SPOTIFYD_VERSION}/spotifyd-linux-${ARCH}-slim.tar.gz
+tar -xvzf files/spotifyd-linux-${ARCH}-slim.tar.gz
 rm spotifyd-linux-${ARCH}-slim.tar.gz
 mkdir -p /usr/local/bin
 mv spotifyd /usr/local/bin

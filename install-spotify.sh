@@ -3,6 +3,9 @@
 # SPOTIFYD_VERSION=0.2.24
 ARCH=armhf # Change to armv6 for Raspberry Pi 1/Zero
 
+if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
+
+echo
 echo -n "Do you want to install Spotify Connect (spotifyd v${SPOTIFYD_VERSION})? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi

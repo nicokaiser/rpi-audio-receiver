@@ -34,20 +34,7 @@ Sets up Bluetooth, adds a simple agent that accepts every connection, and enable
 
 ### AirPlay
 
-Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver. 
-
-You may override some of the default settings in the script using environment variables. 
-You could pass them directly to the script, 
-for instance if you want a different version:
-`sudo SHAIRPORT_VERSION=3.3.5 ./install.sh`
-
-Here is another example, exporting them before running the individual script to also compile using a different audio back-end:
-
-```
-export SHAIRPORT_VERSION=3.3.5
-export SHAIRPORT_CONFIGURE="--with-stdout --with-metadata --with-avahi --with-ssl=openssl --with-soxr"
-sudo ./install-shairport.sh
-```
+Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.
 
 ### Spotify Connect
 

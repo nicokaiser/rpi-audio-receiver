@@ -31,6 +31,7 @@ cat <<'EOF' > /etc/systemd/system/btinterface.service
 Description=Bluetooth hardware initialisiation
 After=bluetooth.service
 Before=bluealsa.service
+Requires=bluetooth.service
 
 [Service]
 Type=oneshot

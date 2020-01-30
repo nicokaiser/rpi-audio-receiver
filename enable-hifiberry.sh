@@ -54,8 +54,8 @@ pcm.!default {
 }
 EOF
 
-amixer sset 'Softvol' 100%
-alsactl store
+#amixer sset 'Softvol' 100%
+#alsactl store
 
 cat /boot/config.txt | grep -vi "dtparam=audio" | grep -vi hifiberry >/tmp/config.txt
 echo dtoverlay=hifiberry-${CARD} >>/tmp/config.txt

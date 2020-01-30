@@ -9,10 +9,10 @@ apt install -y --no-install-recommends alsa-base alsa-utils bluealsa python-gobj
 # WoodenBeaver sounds
 mkdir -p /usr/local/share/sounds/WoodenBeaver/stereo
 if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav ]; then
-    curl -so /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/master/device-added.wav
+    cp files/device-added.wav /usr/local/share/sounds/WoodenBeaver/stereo/
 fi
 if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav ]; then
-    curl -so /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/master/device-removed.wav
+    cp files/device-removed.wav /usr/local/share/sounds/WoodenBeaver/stereo/
 fi
 
 # Bluetooth settings

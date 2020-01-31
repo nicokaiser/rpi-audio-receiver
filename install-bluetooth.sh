@@ -31,14 +31,14 @@ EOF
 # Bluetooth hardware initialization
 cat <<'EOF' > /etc/systemd/system/btinterface.service
 [Unit]
-Description=Bluetooth hardware initialisiation
+Description=Bluetooth hardware initialisation
 After=bluetooth.service
 Before=bluealsa.service
 Requires=bluetooth.service
 
 [Service]
 Type=oneshot
-ExecStart=sleep 5
+ExecStart=sleep 2
 ExecStartPost=/bin/hciconfig hci0 up
 ExecStartPost=/usr/bin/bluetoothctl power on
 ExecStartPost=/usr/bin/bluetoothctl discoverable on

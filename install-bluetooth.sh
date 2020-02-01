@@ -28,27 +28,14 @@ DiscoverableTimeout = 0
 AutoEnable=true
 EOF
 
-# Bluetooth hardware initialization
-cat <<'EOF' > /etc/systemd/system/btinterface.service
-[Unit]
-Description=Bluetooth hardware initialisation
-After=bluetooth.service
-Before=bluealsa.service
-Requires=bluetooth.service
-
+# Make Bluetooth discoverable after initialisation
+mkdir -p /etc/systemd/system/bthelper@.service.d
+cat <<'EOF' > /etc/systemd/system/bthelper@.service.d/override.conf
 [Service]
-Type=oneshot
-ExecStart=sleep 2
-ExecStartPost=/bin/hciconfig hci0 up
-ExecStartPost=/usr/bin/bluetoothctl power on
 ExecStartPost=/usr/bin/bluetoothctl discoverable on
-ExecStartPost=/bin/hciconfig hci0 piscan
-ExecStartPost=/bin/hciconfig hci0 sspmode 1
-
-[Install]
-WantedBy=multi-user.target
+ExecStartPost=/bin/hciconfig %I piscan
+ExecStartPost=/bin/hciconfig %I sspmode 1
 EOF
-systemctl enable btinterface.service
 
 # Bluetooth agent
 cat <<'EOF' > /usr/local/bin/a2dp-agent.py
@@ -180,8 +167,8 @@ EOF
 cat <<'EOF' > /etc/systemd/system/bluealsa-aplay.service
 [Unit]
 Description=BlueALSA aplay
-Requires=bluealsa.service btinterface.service
-After=bluealsa.service sound.target btinterface.service
+Requires=bluealsa.service
+After=bluealsa.service sound.target
 
 [Service]
 Type=simple

@@ -14,7 +14,7 @@ while true; do
         case $REPLY in
             1) ARCH=${options[0]}; break 2 ;;
             2) ARCH=${options[1]}; break 2 ;;
-            *) echo "Board architecture (armv6 for Raspberry Pi 1/Zero)" >&2
+            *) break ;;
         esac
     done
 done

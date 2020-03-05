@@ -7,7 +7,6 @@ echo -n "Do you want to install Spotify Connect (spotifyd)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-echo
 while true; do
     options=("armhf" "armv6")
     echo "Board architecture (armv6 for Raspberry Pi 1/Zero)"

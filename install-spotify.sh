@@ -1,13 +1,24 @@
 #!/bin/bash -e
 
-ARCH=armhf # Change to armv6 for Raspberry Pi 1/Zero
-
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
 echo
 echo -n "Do you want to install Spotify Connect (spotifyd)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+
+echo
+while true; do
+    options=("armhf" "armv6")
+    echo "Board architecture (armv6 for Raspberry Pi 1/Zero)"
+    select opt in "${options[@]}"; do
+        case $REPLY in
+            1) ARCH=${options[0]}; break 2 ;;
+            2) ARCH=${options[1]}; break 2 ;;
+            *) echo "Board architecture (armv6 for Raspberry Pi 1/Zero)" >&2
+        esac
+    done
+done
 
 # https://github.com/Spotifyd/spotifyd/releases/download/v0.2.24/spotifyd-linux-${ARCH}-slim.tar.gz
 tar -xvzf files/spotifyd-linux-${ARCH}-slim.tar.gz

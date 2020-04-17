@@ -24,6 +24,7 @@ mixer = Softvol
 volume-control = softvol # alsa
 device_name = ${PRETTY_HOSTNAME}
 bitrate = 320
+#zeroconf_port = 4444
 EOF
 
 cat <<'EOF' > /etc/systemd/system/spotifyd.service

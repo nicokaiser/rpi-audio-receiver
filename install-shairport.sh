@@ -12,6 +12,13 @@ dpkg -i files/shairport-sync_3.3.5-1~bpo10+1_armhf.deb
 usermod -a -G gpio shairport-sync
 raspi-config nonint do_boot_wait 0
 
+mkdir -p /etc/systemd/system/shairport-sync.service.d
+cat <<'EOF' > /etc/systemd/system/shairport-sync.service.d/override.conf
+[Service]
+# Avahi daemon needs some time until fully ready
+ExecStartPre=/bin/sleep 3
+EOF
+
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 

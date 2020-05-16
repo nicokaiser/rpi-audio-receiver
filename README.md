@@ -16,11 +16,11 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 The installation script asks whether to install each component.
 
+    cd /tmp
     wget -q https://github.com/nicokaiser/rpi-audio-receiver/archive/master.zip
     unzip master.zip
-    rm master.zip
 
-    cd rpi-audio-receiver-master
+    cd rpi-audio-receiver-master/install.sh
     ./install.sh
 
 ### Basic setup

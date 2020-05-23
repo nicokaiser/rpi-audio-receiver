@@ -48,6 +48,7 @@ Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP
 ### Snapcast
 
 Installs [snapclient](https://github.com/badaix/snapcast), the client component of the Snapcast Synchronous multi-room audio player.
+Two options are available. Install is possible with apt package (currently v.0.15.0) or via .deb file (v.0.19.0)
 
 ### Read-only mode
 

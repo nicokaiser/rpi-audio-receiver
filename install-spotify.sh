@@ -14,15 +14,12 @@ tar -xvzf files/spotifyd-linux-${ARCH}-slim.tar.gz
 mkdir -p /usr/local/bin
 mv spotifyd /usr/local/bin
 
-PRETTY_HOSTNAME=$(hostnamectl status --pretty | tr ' ' '-')
-PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
-cat <<EOF > /etc/spotifyd.conf
+cat <<'EOF' > /etc/spotifyd.conf
 [global]
 backend = alsa
 mixer = Softvol
 volume-control = softvol # alsa
-device_name = ${PRETTY_HOSTNAME}
 bitrate = 320
 #zeroconf_port = 4444
 EOF
@@ -36,7 +33,8 @@ After=network.target sound.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/spotifyd --no-daemon
+ExecStartPre=/bin/sh -c "/bin/systemctl set-environment DEVICE_NAME=$(hostname)"
+ExecStart=/usr/local/bin/spotifyd --no-daemon --device-name $DEVICE_NAME
 Restart=always
 RestartSec=5
 

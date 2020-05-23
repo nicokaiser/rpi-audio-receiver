@@ -25,7 +25,7 @@ The installation script asks whether to install each component.
 
 ### Basic setup
 
-Sets hostname to e.g. `airpi`, the visible device name ("pretty hostname") to `AirPi`.
+Sets hostname to e.g. `airpi`.
 
 ### Bluetooth
 

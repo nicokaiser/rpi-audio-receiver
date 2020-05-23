@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 ARCH=armhf # Change to armv6 for Raspberry Pi 1/Zero
-BUILD=slim # Change to full for build with all optional features enabled
+BUILD=full # Change to full for build with all optional features enabled
 
 # Create URL with ARCH and BUILD vars for easier use in curl 
 URL=browser_download_url.*${ARCH}-${BUILD}.tar.gz
@@ -18,7 +18,7 @@ curl -s https://api.github.com/repos/Spotifyd/spotifyd/releases/latest \
 | grep $URL \
 | cut -d : -f 2,3 \
 | tr -d \" \
-| xargs -n 1 wget -P ./files/spotifyd-linux-${ARCH}-${BUILD}.tar.gz
+| xargs -n 1 wget -P ./files/
 tar -xvzf files/spotifyd-linux-${ARCH}-${BUILD}.tar.gz
 
 mkdir -p /usr/local/bin

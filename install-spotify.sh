@@ -1,6 +1,10 @@
 #!/bin/bash -e
 
 ARCH=armhf # Change to armv6 for Raspberry Pi 1/Zero
+BUILD=slim # Change to full for build with all optional features enabled
+
+# Create URL with ARCH and BUILD vars for easier use in curl 
+URL=browser_download_url.*${ARCH}-${BUILD}.tar.gz
 
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
@@ -9,8 +13,14 @@ echo -n "Do you want to install Spotify Connect (spotifyd)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-# https://github.com/Spotifyd/spotifyd/releases/download/v0.2.24/spotifyd-linux-${ARCH}-slim.tar.gz
-tar -xvzf files/spotifyd-linux-${ARCH}-slim.tar.gz
+# Always get the latest version
+curl -s https://api.github.com/repos/Spotifyd/spotifyd/releases/latest \
+| grep $URL \
+| cut -d : -f 2,3 \
+| tr -d \" \
+| xargs -n 1 wget -P ./files/spotifyd-linux-${ARCH}-${BUILD}.tar.gz
+tar -xvzf files/spotifyd-linux-${ARCH}-${BUILD}.tar.gz
+
 mkdir -p /usr/local/bin
 mv spotifyd /usr/local/bin
 

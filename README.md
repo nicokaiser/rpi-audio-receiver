@@ -33,9 +33,9 @@ Sets up Bluetooth, adds a simple agent that accepts every connection, and enable
 
 ### AirPlay
 
-Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.
-
-This script comes with a backported version of shairport-sync from Raspbian Bullseye (see [SimpleBackportCreation](https://wiki.debian.org/SimpleBackportCreation) for details) and can be replaced with the original (but older) one in Raspbian Buster or a sef-compiled one (not part of this project).
+AirPlay is used by Apple devices with iOS, iPadOS and MacOS. 
+The script installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver. It comes with a backported version of shairport-sync from Raspbian Bullseye (see [SimpleBackportCreation](https://wiki.debian.org/SimpleBackportCreation) for details).
+In addition there is an option to build the current version from source.
 
 ### Spotify Connect
 

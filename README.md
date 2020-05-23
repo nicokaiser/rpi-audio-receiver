@@ -41,9 +41,11 @@ In addition there is an option to build the current version from source.
 
 Installs [Spotifyd](https://github.com/Spotifyd/spotifyd), an open source Spotify client).
 
-### UPnP
+### DLNA/UPnP
 
-Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP Renderer.
+DLNA/UPnP is used by several clients. Windows Media Player supports it out of the box. For Android [Bubble UPnP](https://play.google.com/store/apps/details?id=com.bubblesoft.android.bubbleupnp&hl=com) is a recommended app.
+The script installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP Renderer. It is possible to install it with apt package manager or build it locally from source.
+Apt version is currently outdated (version: 0.0.7~git20170910+repack-1), has some issues with contol and is not changing the hostname dynamically. <b>It is highly recommended to install from source!</b>
 
 ### Snapcast
 

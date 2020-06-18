@@ -10,12 +10,12 @@ if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 apt install -y --no-install-recommends alsa-base alsa-utils bluealsa python-gobject python-dbus
 
 # WoodenBeaver sounds
-mkdir -p /usr/local/share/sounds/WoodenBeaver/stereo
-if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav ]; then
-    cp files/device-added.wav /usr/local/share/sounds/WoodenBeaver/stereo/
+mkdir -p /usr/local/share/sounds/__custom
+if [ ! -f /usr/local/share/sounds/__custom/device-added.wav ]; then
+    cp files/device-added.wav /usr/local/share/sounds/__custom/
 fi
-if [ ! -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav ]; then
-    cp files/device-removed.wav /usr/local/share/sounds/WoodenBeaver/stereo/
+if [ ! -f /usr/local/share/sounds/__custom/device-removed.wav ]; then
+    cp files/device-removed.wav /usr/local/share/sounds/__custom/
 fi
 
 # Bluetooth settings
@@ -193,16 +193,16 @@ action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 
 if [ "$action" = "add" ]; then
     bluetoothctl discoverable off
-    if [ -f /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav ]; then
-        aplay -q /usr/local/share/sounds/WoodenBeaver/stereo/device-added.wav
+    if [ -f /usr/local/share/sounds/__custom/device-added.wav ]; then
+        aplay -q /usr/local/share/sounds/__custom/device-added.wav
     fi
     # disconnect wifi to prevent dropouts
     #ifconfig wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
-    if [ -f /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav ]; then
-        aplay -q /usr/local/share/sounds/WoodenBeaver/stereo/device-removed.wav
+    if [ -f /usr/local/share/sounds/__custom/device-removed.wav ]; then
+        aplay -q /usr/local/share/sounds/__custom/device-removed.wav
     fi
     # reenable wifi
     #ifconfig wlan0 up &

@@ -48,6 +48,7 @@ After=bluetooth.service
 ExecStart=/usr/bin/bt-agent --capability=NoInputNoOutput
 RestartSec=5
 Restart=always
+KillSignal=SIGUSR1
 
 [Install]
 WantedBy=multi-user.target

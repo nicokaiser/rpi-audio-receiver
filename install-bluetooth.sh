@@ -36,6 +36,7 @@ Type=oneshot
 ExecStartPost=/usr/bin/bluetoothctl discoverable on
 ExecStartPost=/bin/hciconfig %I piscan
 ExecStartPost=/bin/hciconfig %I sspmode 1
+#ExecStartPost=/bin/hciconfig %I sspmode 0 # Use PIN for pairing
 EOF
 
 cat <<'EOF' > /etc/systemd/system/bt-agent.service
@@ -46,6 +47,7 @@ After=bluetooth.service
 
 [Service]
 ExecStart=/usr/bin/bt-agent --capability=NoInputNoOutput
+#ExecStart=/usr/bin/bt-agent --capability=NoInputNoOutput --pin /etc/bluetooth/pin.conf
 RestartSec=5
 Restart=always
 KillSignal=SIGUSR1

@@ -31,16 +31,6 @@ Sets hostname to e.g. `airpi`, the visible device name ("pretty hostname") to `A
 
 Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through [BlueALSA](https://github.com/Arkq/bluez-alsa). A udev script is installed that disables discoverability while connected.
 
-#### Enable pairing with PIN
-
-To enable pairing with a PIN code instead of Simple Secure Pairing mode, the following steps are required:
-
-1. Change `sspmode 1` to `sspmode 0` in `/etc/systemd/system/bthelper@.service.d/override.conf`
-2. Add ` --pin /etc/bluetooth/pin.conf` to the `ExecStart` line in `/etc/systemd/system/bthelper@.service.d/override.conf`
-3. Add a file `/etc/bluetooth/pin.conf` which contains PIN code for the devices:
-
-`AA:BB:CC:DD:EE:FF 1234` (replace `AA:BB:CC:DD:EE:FF` with your Bluetooth devices's Mac address or `*` to use PIN `1234` for all devices)
-
 ### AirPlay
 
 Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.

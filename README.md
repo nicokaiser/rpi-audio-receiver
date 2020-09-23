@@ -39,7 +39,7 @@ This script comes with a backported version of shairport-sync from Raspbian Bull
 
 ### Spotify Connect
 
-Installs [Spotifyd](https://github.com/Spotifyd/spotifyd), an open source Spotify client).
+Installs [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi).
 
 ### UPnP
 
@@ -79,7 +79,7 @@ Package and configuration choices are quite opinionated but as close to the Debi
 
 - [BlueALSA: Bluetooth Audio ALSA Backend](https://github.com/Arkq/bluez-alsa)
 - [Shairport Sync: AirPlay Audio Receiver](https://github.com/mikebrady/shairport-sync)
-- [Spotifyd: open source Spotify client](https://github.com/Spotifyd/spotifyd)
+- [Raspotify: Spotify Connect client for the Raspberry Pi that Just Works™](https://github.com/dtcooper/raspotify)
 - [gmrender-resurrect: Headless UPnP Renderer](http://github.com/hzeller/gmrender-resurrect)
 - [Snapcast: Synchronous audio player](https://github.com/badaix/snapcast)
 - [pivumeter: ALSA plugin for displaying VU meters on various Raspberry Pi add-ons](https://github.com/pimoroni/pivumeter)

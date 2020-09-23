@@ -8,8 +8,8 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 ## Requirements
 
-- Raspberry Pi with Bluetooth support (tested wth Raspberry Pi 3, 4 and Zero W) or USB dongle
-- Raspbian Buster Lite (tested with February 2020 version)
+- Raspberry Pi with Bluetooth support (tested with Raspberry Pi 3, 4 and Zero W) or USB dongle (highly recommended!)
+- Raspbian Buster Lite (tested with August 2020 version)
 - Internal audio, HDMI, USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
 
 ## Installation
@@ -25,7 +25,7 @@ The installation script asks whether to install each component.
 
 ### Basic setup
 
-Sets hostname to e.g. `airpi`, the visible device name ("pretty hostname") to `AirPi`.
+Lets you choose the hostname and the visible device name ("pretty hostname") which is displayed as Bluetooth name, in AirPlay clients and in Spotify.
 
 ### Bluetooth
 
@@ -63,7 +63,13 @@ To avoid SD card corruption when powering off, you can boot Raspbian in read-onl
 
 ## Disclaimer
 
-These scripts are tested and work on a current (as of May 2020) Raspbian setup on Raspberry Pi. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
+These scripts are tested and work on a current (as of September 2020) Raspbian setup on Raspberry Pi. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
+
+## Upgrading
+
+This project does not really support upgrading to newer versions of this script. It is meant to be adjusted to your needs and run on a clean Raspbian install. When something goes wrong, the easiest way is to just wipe the SD card and start over. Since apart from Bluetooth pairing information all parts are stateless, this should be ok.
+
+Updating the system using `apt-get upgrade` should work however.
 
 ## Contributing
 

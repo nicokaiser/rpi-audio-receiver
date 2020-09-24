@@ -8,6 +8,7 @@ read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
+usermod -a -G gpio raspotify
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty | tr ' ' '-')
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}

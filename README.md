@@ -9,7 +9,7 @@ Devices like phones, tablets and computers can play audio via this receiver.
 ## Requirements
 
 - Raspberry Pi with Bluetooth support (tested with Raspberry Pi 3, 4 and Zero W) or USB dongle (highly recommended!)
-- Raspbian Buster Lite (tested with August 2020 version)
+- Raspberry Pi OS Buster Lite (tested with August 2020 version)
 - Internal audio, HDMI, USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
 
 ## Installation
@@ -35,7 +35,7 @@ Sets up Bluetooth, adds a simple agent that accepts every connection, and enable
 
 Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.
 
-This script comes with a backported version of shairport-sync from Raspbian Bullseye (see [SimpleBackportCreation](https://wiki.debian.org/SimpleBackportCreation) for details) and can be replaced with the original (but older) one in Raspbian Buster or a sef-compiled one (not part of this project).
+This script comes with a backported version of shairport-sync from Raspberry Pi OS Bullseye (see [SimpleBackportCreation](https://wiki.debian.org/SimpleBackportCreation) for details) and can be replaced with the original (but older) one in Raspberry Pi OS Buster or a sef-compiled one (not part of this project).
 
 ### Spotify Connect
 
@@ -51,7 +51,7 @@ Installs [snapclient](https://github.com/badaix/snapcast), the client component 
 
 ### Read-only mode
 
-To avoid SD card corruption when powering off, you can boot Raspbian in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.
+To avoid SD card corruption when powering off, you can boot Raspberry Pi OS in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.
 
 ## Limitations
 
@@ -63,11 +63,11 @@ To avoid SD card corruption when powering off, you can boot Raspbian in read-onl
 
 ## Disclaimer
 
-These scripts are tested and work on a current (as of September 2020) Raspbian setup on Raspberry Pi. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
+These scripts are tested and work on a current (as of September 2020) Raspberry Pi OS setup on Raspberry Pi. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
 
 ## Upgrading
 
-This project does not really support upgrading to newer versions of this script. It is meant to be adjusted to your needs and run on a clean Raspbian install. When something goes wrong, the easiest way is to just wipe the SD card and start over. Since apart from Bluetooth pairing information all parts are stateless, this should be ok.
+This project does not really support upgrading to newer versions of this script. It is meant to be adjusted to your needs and run on a clean Raspberry Pi OS install. When something goes wrong, the easiest way is to just wipe the SD card and start over. Since apart from Bluetooth pairing information all parts are stateless, this should be ok.
 
 Updating the system using `apt-get upgrade` should work however.
 

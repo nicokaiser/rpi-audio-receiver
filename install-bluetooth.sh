@@ -9,15 +9,6 @@ if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez-tools
 
-# WoodenBeaver sounds
-mkdir -p /usr/local/share/sounds/__custom
-if [ ! -f /usr/local/share/sounds/__custom/device-added.wav ]; then
-    cp files/device-added.wav /usr/local/share/sounds/__custom/
-fi
-if [ ! -f /usr/local/share/sounds/__custom/device-removed.wav ]; then
-    cp files/device-removed.wav /usr/local/share/sounds/__custom/
-fi
-
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
 [General]
@@ -97,17 +88,11 @@ action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
 
 if [ "$action" = "add" ]; then
     bluetoothctl discoverable off
-    if [ -f /usr/local/share/sounds/__custom/device-added.wav ]; then
-        aplay -q /usr/local/share/sounds/__custom/device-added.wav
-    fi
     # disconnect wifi to prevent dropouts
     #ifconfig wlan0 down &
 fi
 
 if [ "$action" = "remove" ]; then
-    if [ -f /usr/local/share/sounds/__custom/device-removed.wav ]; then
-        aplay -q /usr/local/share/sounds/__custom/device-removed.wav
-    fi
     # reenable wifi
     #ifconfig wlan0 up &
     bluetoothctl discoverable on

@@ -49,6 +49,11 @@ Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP
 
 Installs [snapclient](https://github.com/badaix/snapcast), the client component of the Snapcast Synchronous multi-room audio player.
 
+### Enable sound
+
+The script helps you to enable and configure the sound devices. It will list the cards known to ALSA. You were asked whether you want to simply
+set one of the cards (like HDMI-output, headset-jack or e.g. an UPnP-USB-sounddevice) as the default audio device or you can enable a HifiBerry-board.
+
 ### Read-only mode
 
 To avoid SD card corruption when powering off, you can boot Raspberry Pi OS in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.

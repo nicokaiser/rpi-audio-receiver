@@ -3,13 +3,27 @@
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
 echo
-echo -n "Do you want to enable HiFiBerry device tree overlay and ALSA configuration? [y/N] "
-read REPLY
+read -e -i "y" -p "Do you want to enable configure ALSA and sound devices like HiFiBerry or onboard sound? [y/N] " -r REPLY 
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-echo -n "Which board do you want to enable? [dac/dacplus/dacplusadc/dacplusadcpro/dacplusdsp/digi/digipro/amp] "
-read CARD
-if [[ ! "$CARD" =~ ^(dac|dacplus|digi|amp)$ ]]; then exit 1; fi
+echo 
+echo "Listing sound cards actually know to ALSA:"
+aplay -l | grep -E '(^Karte|^card)'
+if [ -e /etc/asound.conf ]; then
+  active=$(grep defaults.pcm.card /etc/asound.conf | cut -d " " -f2)
+  echo
+  echo "/etc/asound.conf exits - be careful! Default card is $active"
+fi
+echo
+
+echo "Do want to enable a HiFiBerry-board or one of the cards listed above? "
+read -p "Enter board name or card number [dac/dacplus/dacplusadc/dacplusadcpro/dacplusdsp/digi/digipro/amp/0/1/2/..] " -r CARD 
+if [[ ! "$CARD" =~ ^(dac|dacplus|digi|amp|[0-9])$ ]]; then 
+  echo "$CARD is not a valid input!"
+  exit 1
+fi
+
+if [[ ! "$CARD" =~ ^[0-9]$ ]]; then 
 
 cat <<'EOF' > /etc/asound.conf
 defaults.pcm.card 0
@@ -63,3 +77,12 @@ EOF
 cat /boot/config.txt | grep -vi "dtparam=audio" | grep -vi hifiberry >/tmp/config.txt
 echo dtoverlay=hifiberry-${CARD} >>/tmp/config.txt
 mv /tmp/config.txt /boot/config.txt
+
+else
+
+cat <<EOF > /etc/asound.conf
+defaults.pcm.card ${CARD}
+defaults.ctl.card ${CARD}
+EOF
+
+fi

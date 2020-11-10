@@ -7,10 +7,23 @@ echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-apt install --no-install-recommends -y avahi-daemon libavahi-client3 libconfig9 libdaemon0 libjack-jackd2-0 libmosquitto1 libpopt0 libpulse0 libsndfile1 libsoxr0
-dpkg -i files/shairport-sync_3.3.5-1~bpo10+1_armhf.deb
+#apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential git libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config
+apt install --no-install-recommends -y avahi-daemon build-essential git xmltoman autoconf automake libtool libdaemon-dev libpopt-dev libconfig-dev libasound2-dev libpulse-dev  libavahi-client-dev libssl-dev libsoxr-dev
+
+
+git clone https://github.com/mikebrady/shairport-sync.git
+cd shairport-sync 
+last_stable_tag=$(git tag | grep -oP "^[0-9.]+$" | tail -1)
+git checkout $last_stable_tag
+autoreconf -fi
+./configure --sysconfdir=/etc --with-alsa --with-avahi --with-ssl=openssl --with-systemd --with-metadata
+make
+make install
+cd ..
+
 usermod -a -G gpio shairport-sync
-raspi-config nonint do_boot_wait 0
+
+# raspi-config nonint do_boot_wait 0
 
 mkdir -p /etc/systemd/system/shairport-sync.service.d
 cat <<'EOF' > /etc/systemd/system/shairport-sync.service.d/override.conf
@@ -22,18 +35,26 @@ EOF
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
-cat <<EOF > "/etc/shairport-sync.conf"
+cat <<EOF > /etc/shairport-sync.conf
 general = {
   name = "${PRETTY_HOSTNAME}";
 }
-
 alsa = {
-//  mixer_control_name = "Softvol";
+//  mixer_control_name = "Master";
 }
-
+metadata =
+{
+  enabled = "yes";
+  include_cover_art = "yes";
+  pipe_name = "/tmp/shairport-sync-metadata";
+  pipe_timeout = 5000;
+};
 sessioncontrol = {
+  wait_for_completion = "no";
+  allow_session_interruption = "yes";
   session_timeout = 20;
 };
 EOF
 
 systemctl enable --now shairport-sync
+# systemctl start shairport-sync

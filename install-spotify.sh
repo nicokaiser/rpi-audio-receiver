@@ -2,20 +2,28 @@
 
 echo "Installing Spotify Connect (spotifyd)"
 
-wget https://github.com/Spotifyd/spotifyd/releases/download/v0.2.5/spotifyd-2019-02-25-armv6.zip
-unzip spotifyd-2019-02-25-armv6.zip
-rm spotifyd-2019-02-25-armv6.zip
+#wget https://github.com/Spotifyd/spotifyd/releases/download/v0.2.5/spotifyd-2019-02-25-armv6.zip
+#unzip spotifyd-2019-02-25-armv6.zip
+#rm spotifyd-2019-02-25-armv6.zip
+
+wget https://github.com/Spotifyd/spotifyd/releases/download/v0.2.24/spotifyd-linux-armv6-slim.tar.gz
+tar -xf spotifyd-linux-armv6-slim.tar.gz
+rm spotifyd-linux-armv6-slim.tar.gz
+
 mkdir -p /opt/local/bin
 mv spotifyd /opt/local/bin
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
+# Check https://github.com/Spotifyd/spotifyd#configuration-file
+#   for more conif options
 cat <<EOF > /etc/spotifyd.conf
 [global]
 backend = alsa
-mixer = Master
-volume-control = softvol # or alsa
+volume_controller = softvol # alsa
+mixer = Headphone
+device = sysdefault
 device_name = ${PRETTY_HOSTNAME}
 bitrate = 320
 EOF
@@ -31,7 +39,7 @@ After=network-online.target
 [Service]
 Type=idle
 User=pi
-ExecStart=/opt/local/bin/spotifyd -c /etc/spotifyd.conf --no-daemon
+ExecStart=/opt/local/bin/spotifyd --config-path /etc/spotifyd.conf --no-daemon
 Restart=always
 RestartSec=10
 StartLimitInterval=30

@@ -25,6 +25,8 @@ usermod -a -G gpio shairport-sync
 
 # raspi-config nonint do_boot_wait 0
 
+# For aditional configurations check /etc/shairport-sync.conf.sample
+
 mkdir -p /etc/systemd/system/shairport-sync.service.d
 cat <<'EOF' > /etc/systemd/system/shairport-sync.service.d/override.conf
 [Service]
@@ -41,6 +43,8 @@ general = {
 }
 alsa = {
 //  mixer_control_name = "Master";
+// output_device = "default";
+  output_device = "hw:Headphones";
 }
 metadata =
 {

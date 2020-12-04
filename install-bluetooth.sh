@@ -24,7 +24,7 @@ mkdir -p /etc/systemd/system/bthelper@.service.d
 cat <<'EOF' > /etc/systemd/system/bthelper@.service.d/override.conf
 [Service]
 Type=oneshot
-ExecStartPost=/usr/bin/bluetoothctl discoverable on
+ExecStartPost=/usr/bin/bluetoothctl discoverable of
 ExecStartPost=/bin/hciconfig %I piscan
 ExecStartPost=/bin/hciconfig %I sspmode 1
 EOF

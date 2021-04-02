@@ -2,15 +2,39 @@
 
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
+: "${SHAIRPORT_VERSION:=3.3.7}"
+
 echo
 echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport-sync v${SHAIRPORT_VERSION})? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-apt install --no-install-recommends -y avahi-daemon libavahi-client3 libconfig9 libdaemon0 libjack-jackd2-0 libmosquitto1 libpopt0 libpulse0 libsndfile1 libsoxr0
-dpkg -i files/shairport-sync_3.3.5-1~bpo10+1_armhf.deb
+apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config libsoxr0 libsoxr-dev libsndfile1 libsndfile1-dev libglib2.0-dev libmosquitto-dev libmosquitto1
+
+wget -O shairport_sync-v${SHAIRPORT_VERSION}.tar.gz https://github.com/mikebrady/shairport-sync/archive/${SHAIRPORT_VERSION}.tar.gz
+tar xzf shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
+rm shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
+cd shairport-sync-${SHAIRPORT_VERSION}
+autoreconf -fi
+./configure \
+    --with-alsa \
+    --with-dummy \
+    --with-avahi \
+    --with-ssl=openssl \
+    --with-soxr \
+    --with-systemd \
+    --sysconfdir=/etc \
+    --with-dbus-interface \
+    --with-mpris-interface \
+    --with-mqtt-client \
+    --with-apple-alac \
+    --with-convolution
+make -j $(nproc)
+make install
+cd ..
+rm -rf shairport-sync-${SHAIRPORT_VERSION}
+
 usermod -a -G gpio shairport-sync
-raspi-config nonint do_boot_wait 0
 
 mkdir -p /etc/systemd/system/shairport-sync.service.d
 cat <<'EOF' > /etc/systemd/system/shairport-sync.service.d/override.conf
@@ -25,10 +49,6 @@ PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 cat <<EOF > "/etc/shairport-sync.conf"
 general = {
   name = "${PRETTY_HOSTNAME}";
-}
-
-alsa = {
-//  mixer_control_name = "Softvol";
 }
 
 sessioncontrol = {

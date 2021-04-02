@@ -8,7 +8,7 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 ## Requirements
 
-- Raspberry Pi with Bluetooth support (tested with Raspberry Pi 3, 4 and Zero W) or USB dongle (highly recommended!)
+- A USB Bluetooth dongle (the internal Raspberry Pi Bluetooth chipset turned out as not suited for audio playback and causes all kinds of strange connectivity problems) 
 - Raspberry Pi OS Buster Lite (tested with August 2020 version)
 - Internal audio, HDMI, USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
 
@@ -39,7 +39,7 @@ This script comes with a backported version of shairport-sync from Raspberry Pi 
 
 ### Spotify Connect
 
-Installs [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi).
+Installs [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi.
 
 ### UPnP
 

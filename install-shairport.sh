@@ -11,6 +11,19 @@ if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config libsoxr0 libsoxr-dev libsndfile1 libsndfile1-dev libglib2.0-dev libmosquitto-dev libmosquitto1
 
+# Install ALAC from GitHub
+wget -O alac.tar.gz https://github.com/TimothyGu/alac/archive/refs/heads/master.tar.gz
+tar xzf alac.tar.gz
+rm alac.tar.gz
+cd alac-master
+autoreconf -fi
+./configure
+make -j $(nproc)
+make install
+cd ..
+rm -rf alac-master
+
+# Install shairport-sync from GitHub
 wget -O shairport_sync-v${SHAIRPORT_VERSION}.tar.gz https://github.com/mikebrady/shairport-sync/archive/${SHAIRPORT_VERSION}.tar.gz
 tar xzf shairport_sync-v${SHAIRPORT_VERSION}.tar.gz
 rm shairport_sync-v${SHAIRPORT_VERSION}.tar.gz

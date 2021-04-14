@@ -54,6 +54,7 @@ cat <<'EOF' > /etc/systemd/system/shairport-sync.service.d/override.conf
 [Service]
 # Avahi daemon needs some time until fully ready
 ExecStartPre=/bin/sleep 3
+Environment=LD_LIBRARY_PATH=/usr/local/lib
 EOF
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)

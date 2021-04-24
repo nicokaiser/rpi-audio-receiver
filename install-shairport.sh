@@ -22,6 +22,7 @@ make -j $(nproc)
 make install
 cd ..
 rm -rf alac-master
+ldconfig
 
 # Install shairport-sync from GitHub
 wget -O shairport_sync-v${SHAIRPORT_VERSION}.tar.gz https://github.com/mikebrady/shairport-sync/archive/${SHAIRPORT_VERSION}.tar.gz

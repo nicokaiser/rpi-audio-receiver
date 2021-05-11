@@ -9,6 +9,7 @@ then
 	read -p "Pretty hostname [${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}]: " PRETTY_HOSTNAME
 	sudo hostnamectl set-hostname --pretty "${PRETTY_HOSTNAME:-${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}}"
 else
+  if [ ! -f "./setup.conf" ]; then echo "./setup.conf not found"; exit -1;fi
         source ./setup.conf
 fi
 

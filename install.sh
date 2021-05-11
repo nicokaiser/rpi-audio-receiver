@@ -18,11 +18,11 @@ sudo apt update
 sudo apt upgrade -y
 
 echo "Installing components"
-if [[ $FEATURES = *bluetooth* ]]; then sudo ./install-bluetooth.sh $@; fi
-if [[ $FEATURES = *shairport* ]]; then sudo ./install-shairport.sh $@; fi
-if [[ $FEATURES = *spotify* ]]; then sudo ./install-spotify.sh $@; fi
-if [[ $FEATURES = *upnp* ]]; then sudo ./install-upnp.sh $@; fi
-if [[ $FEATURES = *snapcast* ]]; then sudo ./install-snapcast-client.sh $@; fi
-if [[ $FEATURES = *pivumeter* ]]; then sudo ./install-pivumeter.sh $@; fi
+if [[ $FEATURES = *bluetooth* ]]; then sudo $(dirname $0)/install-bluetooth.sh $@; fi
+if [[ $FEATURES = *shairport* ]]; then sudo $(dirname $0)/install-shairport.sh $@; fi
+if [[ $FEATURES = *spotify* ]]; then sudo $(dirname $0)/install-spotify.sh $@; fi
+if [[ $FEATURES = *upnp* ]]; then sudo $(dirname $0)/install-upnp.sh $@; fi
+if [[ $FEATURES = *snapcast* ]]; then sudo $(dirname $0)/install-snapcast-client.sh $@; fi
+if [[ $FEATURES = *pivumeter* ]]; then sudo $(dirname $0)/install-pivumeter.sh $@; fi
 #if [[ $FEATURES = *hifiberry* ]]; then sudo ./enable-hifiberry.sh $@; fi ##sctipt not alterted
-if [[ $FEATURES = *read-only* ]]; then sudo ./enable-read-only.sh $@; fi
+if [[ $FEATURES = *read-only* ]]; then sudo $(dirname $0)/enable-read-only.sh $@; fi

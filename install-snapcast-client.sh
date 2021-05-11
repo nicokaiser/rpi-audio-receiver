@@ -8,6 +8,8 @@ then
 	echo -n "Do you want to install Snapcast client (snapclient})? [y/N] "
 	read REPLY
 	if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+else
+        source ./setup.conf
 fi
 
 apt install --no-install-recommends -y snapclient

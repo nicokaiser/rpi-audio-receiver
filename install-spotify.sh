@@ -9,6 +9,8 @@ then
 	echo -n "Do you want to install Spotify Connect (Raspotify)? [y/N] "
 	read REPLY
 	if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+else
+        source ./setup.conf
 fi
 
 curl -sL https://dtcooper.github.io/raspotify/install.sh | sh

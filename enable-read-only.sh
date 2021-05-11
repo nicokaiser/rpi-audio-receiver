@@ -2,10 +2,16 @@
 
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
-echo
-echo -n "Do you want to enable read-only mode? [y/N] "
-read REPLY
-if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+if [ "$1" != "-q" ];
+then
+    echo
+    echo -n "Do you want to enable read-only mode? [y/N] "
+    read REPLY
+    if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+else
+  	if [ ! -f "./setup.conf" ]; then echo "./setup.conf not found"; exit -1;fi
+    source ./setup.conf
+fi
 
 # Disable swapfile
 dphys-swapfile swapoff

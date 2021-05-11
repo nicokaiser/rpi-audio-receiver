@@ -24,5 +24,5 @@ if [[ $FEATURES = *spotify* ]]; then sudo ./install-spotify.sh $@; fi
 if [[ $FEATURES = *upnp* ]]; then sudo ./install-upnp.sh $@; fi
 if [[ $FEATURES = *snapcast* ]]; then sudo ./install-snapcast-client.sh $@; fi
 if [[ $FEATURES = *pivumeter* ]]; then sudo ./install-pivumeter.sh $@; fi
-if [[ $FEATURES = *hifiberry* ]]; then sudo ./enable-hifiberry.sh $@; fi
+#if [[ $FEATURES = *hifiberry* ]]; then sudo ./enable-hifiberry.sh $@; fi ##sctipt not alterted
 if [[ $FEATURES = *read-only* ]]; then sudo ./enable-read-only.sh $@; fi

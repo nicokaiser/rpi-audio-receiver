@@ -10,7 +10,8 @@ then
 	read REPLY
 	if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 else
- source ./setup.conf
+    if [ ! -f "./setup.conf" ]; then echo "./setup.conf not found"; exit -1;fi
+    source ./setup.conf
 fi
 
 apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez-tools

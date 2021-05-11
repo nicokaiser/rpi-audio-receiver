@@ -9,7 +9,8 @@ then
 	read REPLY
 	if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 else
-        source ./setup.conf
+  	if [ ! -f "./setup.conf" ]; then echo "./setup.conf not found"; exit -1;fi
+    source ./setup.conf
 fi
 
 apt install --no-install-recommends -y snapclient

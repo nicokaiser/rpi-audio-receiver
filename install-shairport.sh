@@ -11,7 +11,8 @@ then
 	read REPLY
 	if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 else
-        source ./setup.conf
+  if [ ! -f "./setup.conf" ]; then echo "./setup.conf not found"; exit -1;fi
+  source ./setup.conf
 fi
 apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config libsoxr0 libsoxr-dev libsndfile1 libsndfile1-dev libglib2.0-dev libmosquitto-dev libmosquitto1
 

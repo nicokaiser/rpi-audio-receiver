@@ -2,10 +2,13 @@
 
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
-echo
-echo -n "Do you want to install UPnP renderer (gmrender-resurrect)? [y/N] "
-read REPLY
-if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+if [ "$1" != "-q" ];
+then
+	echo
+	echo -n "Do you want to install UPnP renderer (gmrender-resurrect)? [y/N] "
+	read REPLY
+	if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+fi
 
 apt install -y --no-install-recommends gmediarender gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-alsa
 

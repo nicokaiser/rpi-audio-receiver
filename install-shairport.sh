@@ -3,12 +3,14 @@
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
 : "${SHAIRPORT_VERSION:=3.3.7}"
+if [ "$1" != "-q" ];
+then
 
-echo
-echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport-sync v${SHAIRPORT_VERSION})? [y/N] "
-read REPLY
-if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
-
+	echo
+	echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport-sync v${SHAIRPORT_VERSION})? [y/N] "
+	read REPLY
+	if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+fi
 apt install --no-install-recommends -y autoconf automake avahi-daemon build-essential libasound2-dev libavahi-client-dev libconfig-dev libdaemon-dev libpopt-dev libssl-dev libtool xmltoman pkg-config libsoxr0 libsoxr-dev libsndfile1 libsndfile1-dev libglib2.0-dev libmosquitto-dev libmosquitto1
 
 # Install ALAC from GitHub

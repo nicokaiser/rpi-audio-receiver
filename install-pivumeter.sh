@@ -2,11 +2,14 @@
 
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
-echo
-echo -n "Do you want to install ALSA VU meter plugin (pivumeter) [y/N] "
-read REPLY
-if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+if [ "$1" != "-q" ];
+then
 
+	echo
+	echo -n "Do you want to install ALSA VU meter plugin (pivumeter) [y/N] "
+	read REPLY
+	if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
+fi
 apt install --no-install-recommends -y git build-essential autoconf automake libtool libasound2-dev libfftw3-dev wiringpi
 git clone https://github.com/pimoroni/pivumeter.git
 cd pivumeter

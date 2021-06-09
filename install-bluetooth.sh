@@ -24,18 +24,18 @@ mkdir -p /etc/systemd/system/bthelper@.service.d
 cat <<'EOF' > /etc/systemd/system/bthelper@.service.d/override.conf
 [Service]
 Type=oneshot
-ExecStartPost=/usr/bin/bluetoothctl discoverable on
-ExecStartPost=/bin/hciconfig %I piscan
-ExecStartPost=/bin/hciconfig %I sspmode 1
 EOF
 
-cat <<'EOF' > /etc/systemd/system/bt-agent.service
+cat <<'EOF' > /etc/systemd/system/bt-agent@.service
 [Unit]
 Description=Bluetooth Agent
 Requires=bluetooth.service
 After=bluetooth.service
 
 [Service]
+ExecStartPre=/usr/bin/bluetoothctl discoverable on
+ExecStartPre=/bin/hciconfig %I piscan
+ExecStartPre=/bin/hciconfig %I sspmode 1
 ExecStart=/usr/bin/bt-agent --capability=NoInputNoOutput
 RestartSec=5
 Restart=always
@@ -44,7 +44,7 @@ KillSignal=SIGUSR1
 [Install]
 WantedBy=multi-user.target
 EOF
-systemctl enable bt-agent.service
+systemctl enable bt-agent@hci0.service
 
 # ALSA settings
 sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf

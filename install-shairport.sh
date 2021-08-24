@@ -43,8 +43,8 @@ general = {
 }
 alsa = {
 //  mixer_control_name = "Master";
-// output_device = "default";
-  output_device = "hw:Headphones";
+//  output_device = "default";
+  output_device = "hw:Headphones,0";
 }
 metadata =
 {

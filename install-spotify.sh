@@ -6,7 +6,8 @@ echo "Installing Spotify Connect (spotifyd)"
 #unzip spotifyd-2019-02-25-armv6.zip
 #rm spotifyd-2019-02-25-armv6.zip
 
-wget https://github.com/Spotifyd/spotifyd/releases/download/v0.2.24/spotifyd-linux-armv6-slim.tar.gz
+#wget https://github.com/Spotifyd/spotifyd/releases/download/v0.2.24/spotifyd-linux-armv6-slim.tar.gz
+wget https://github.com/Spotifyd/spotifyd/releases/latest/download/spotifyd-linux-armv6-slim.tar.gz
 tar -xf spotifyd-linux-armv6-slim.tar.gz
 rm spotifyd-linux-armv6-slim.tar.gz
 
@@ -21,9 +22,8 @@ PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 cat <<EOF > /etc/spotifyd.conf
 [global]
 backend = alsa
-volume_controller = softvol # alsa
-mixer = Headphone
-device = sysdefault
+volume_controller = softvol
+device = hw:Headphones,0
 device_name = ${PRETTY_HOSTNAME}
 bitrate = 320
 EOF

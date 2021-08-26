@@ -17,6 +17,7 @@ mv spotifyd /opt/local/bin
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
+
 # Check https://github.com/Spotifyd/spotifyd#configuration-file
 #   for more conif options
 cat <<EOF > /etc/spotifyd.conf
@@ -78,6 +79,7 @@ StartLimitInterval=30
 StartLimitBurst=20
 [Install]
 WantedBy=multi-user.target
+
 EOF
 systemctl daemon-reload
 systemctl enable --now spotifyd.service

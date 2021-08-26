@@ -47,6 +47,7 @@ autoreconf -fi
 make -j $(nproc)
 make install
 cd ..
+rm -rf shairport-sync
 
 usermod -a -G gpio shairport-sync
 

@@ -86,3 +86,7 @@ Package and configuration choices are quite opinionated but as close to the Debi
 - [Snapcast: Synchronous audio player](https://github.com/badaix/snapcast)
 - [pivumeter: ALSA plugin for displaying VU meters on various Raspberry Pi add-ons](https://github.com/pimoroni/pivumeter)
 - [Adafruit: Read-Only Raspberry Pi](https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/blob/master/read-only-fs.sh)
+
+## License
+
+[MIT](LICENSE)

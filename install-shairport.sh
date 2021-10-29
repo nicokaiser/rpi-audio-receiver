@@ -2,10 +2,10 @@
 
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
-: "${SHAIRPORT_VERSION:=3.3.7}"
+: "${SHAIRPORT_VERSION:=3.3.8}"
 
 echo
-echo -n "Do you want to install Shairport Sync AirPlay Audio Receiver (shairport-sync v${SHAIRPORT_VERSION})? [y/N] "
+echo -n "Do you want to install Shairport Sync AirPlay 1 Audio Receiver (shairport-sync v${SHAIRPORT_VERSION})? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 

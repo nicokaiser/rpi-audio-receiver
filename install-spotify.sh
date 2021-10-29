@@ -16,5 +16,5 @@ PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 cat <<EOF > /etc/default/raspotify
 DEVICE_NAME="${PRETTY_HOSTNAME}"
 BITRATE="320"
-VOLUME_ARGS="--volume-ctrl linear --initial-volume=100"
+VOLUME_ARGS="--initial-volume=100"
 EOF

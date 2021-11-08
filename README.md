@@ -2,6 +2,12 @@
 
 A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, Spotify Connect and UPnP.
 
+## ⚠️ A note on Raspberry Pi OS Bullseye
+
+The current version of Raspberry Pi OS (2021-10-30) is based on Debian 11 (Bullseye). This version does not contain the BlueALSA package (`bluealsa`) anymore. **So this project will not work with Raspberry Pi OS 2021-10-30 and newer.**
+
+In the future, I may try to re-add Bluetooth Audio support through Pulse Audio, but this requires quite some work and may not work on older devices like Raspberry Pi 1 and Raspberry Pi Zero. You may want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality.
+
 ## Features
 
 Devices like phones, tablets and computers can play audio via this receiver.

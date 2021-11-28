@@ -8,13 +8,22 @@ read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
-usermod -a -G gpio raspotify
+usermod -a -G pulse-access raspotify
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty | tr ' ' '-')
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
 cat <<EOF > /etc/default/raspotify
 DEVICE_NAME="${PRETTY_HOSTNAME}"
+DEVICE_TYPE="avr"
 BITRATE="320"
 VOLUME_ARGS="--initial-volume=100"
 EOF
+
+mkdir -p /etc/systemd/system/raspotify.service.d
+cat <<'EOF' > /etc/systemd/system/raspotify.service.d/override.conf
+[Unit]
+Wants=pulseaudio.service
+EOF
+
+systemctl enable raspotify

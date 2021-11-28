@@ -11,12 +11,36 @@ echo "Updating packages"
 sudo apt update
 sudo apt upgrade -y
 
+echo "Installing PulseAudio"
+apt install -y --no-install-recommends pulseaudio
+usermod -a -G pulse-access root
+usermod -a -G bluetooth pulse
+mv /etc/pulse/client.conf /etc/pulse/client.conf.orig
+cat <<'EOF' >> /etc/pulse/client.conf
+default-server = /run/pulse/native
+autospawn = no
+EOF
+
+# PulseAudio system daemon
+cat <<'EOF' > /etc/systemd/system/pulseaudio.service
+[Unit]
+Description=Sound Service
+[Install]
+WantedBy=multi-user.target
+[Service]
+Type=notify
+PrivateTmp=true
+ExecStart=/usr/bin/pulseaudio --daemonize=no --system --disallow-exit --disable-shm --exit-idle-time=-1 --log-target=journal
+Restart=on-failure
+EOF
+systemctl enable --now pulseaudio.service
+
+# Disable user-level PulseAudio service
+systemctl --global mask pulseaudio.socket
+
 echo "Installing components"
-sudo ./install-bluetooth.sh
+#sudo ./install-bluetooth.sh # Currently not supported, needs to be updated to PulseAudio
 sudo ./install-shairport.sh
 sudo ./install-spotify.sh
-sudo ./install-upnp.sh
-sudo ./install-snapcast-client.sh
-sudo ./install-pivumeter.sh
 sudo ./enable-hifiberry.sh
 sudo ./enable-read-only.sh

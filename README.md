@@ -2,11 +2,11 @@
 
 A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, Spotify Connect and UPnP.
 
-## ⚠️ A note on Raspberry Pi OS Bullseye
+## ⚠️ A note on Raspberry Pi OS 10 (Legacy)
 
-The current version of Raspberry Pi OS (2021-10-30) is based on Debian 11 (Bullseye). This version does not contain the BlueALSA package (`bluealsa`) anymore. **So this project will not work with Raspberry Pi OS 2021-10-30 and newer.**
+The current version of Raspberry Pi OS (2021-10-30) is based on Debian 11 (Bullseye). This version does not contain the BlueALSA package (`bluealsa`) anymore. This repository now uses PulseAudio instead of ALSA. This may or may not work on slower devices like Raspberry Pi 1 and Raspberry Pi Zero.
 
-In the future, I may try to re-add Bluetooth Audio support through Pulse Audio, but this requires quite some work and may not work on older devices like Raspberry Pi 1 and Raspberry Pi Zero. You may want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality.
+For these devices, you might want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality or stick with the `debian-10` branch, which works with the "Raspberry Pi OS (Legacy)".
 
 ## Features
 
@@ -14,9 +14,11 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 ## Requirements
 
-- A USB Bluetooth dongle (the internal Raspberry Pi Bluetooth chipset turned out as not suited for audio playback and causes all kinds of strange connectivity problems) 
-- Raspberry Pi OS Buster Lite (tested with May 2021 version)
+- A USB Bluetooth dongle (the internal Raspberry Pi Bluetooth chipset turned out as not suited for audio playback and causes all kinds of strange connectivity problems)
+- Raspberry Pi OS Buster Lite (2021-10-30)
 - Internal audio, HDMI, USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
+
+**Again: do not try to use the internal Bluetooth chip, this will only bring you many hours of frustration.**
 
 ## Installation
 
@@ -35,7 +37,7 @@ Lets you choose the hostname and the visible device name ("pretty hostname") whi
 
 ### Bluetooth
 
-Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through [BlueALSA](https://github.com/Arkq/bluez-alsa). A udev script is installed that disables discoverability while connected.
+Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through PulseAudio. A udev script is installed that disables discoverability while connected.
 
 ### AirPlay 1
 
@@ -45,23 +47,15 @@ Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay A
 
 Installs [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi.
 
-### UPnP
-
-Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect) UPnP Renderer.
-
-### Snapcast
-
-Installs [snapclient](https://github.com/badaix/snapcast), the client component of the Snapcast Synchronous multi-room audio player.
-
 ### Read-only mode
 
-To avoid SD card corruption when powering off, you can boot Raspberry Pi OS in read-only mode. This is described by Adafruit in [this tutorial](https://learn.adafruit.com/read-only-raspberry-pi/) and cannot be undone.
+To avoid SD card corruption when powering off, you can boot Raspberry Pi OS in read-only mode. This can be achieved using the `raspi-config` script.
 
 ## Limitations
 
 - Only one Bluetooth device can be connected at a time, otherwise interruptions may occur.
 - The device is always open, new clients can connect at any time without authentication.
-- To permanently save paired devices when using read-only mode, the Raspberry has to be switched to read-write mode (`mount -o remount,rw /`) until all devices have been paired once.
+- To permanently save paired devices when using read-only mode, the Raspberry has to be switched to read-write mode until all devices have been paired once.
 - You might want to use a Bluetooth USB dongle or have the script disable Wi-Fi while connected (see `bluetooth-udev`), as the BCM43438 (Raspberry Pi 3, Zero W) has severe problems with both switched on, see [raspberrypi/linux/#1402](https://github.com/raspberrypi/linux/issues/1402).
 - The Pi Zero may not be powerful enough to play 192 kHz audio, you may want to change the values in `/etc/asound.conf` accordingly.
 
@@ -71,7 +65,7 @@ There are some further examples, tweaks and how-tos in the [GitHub Wiki](https:/
 
 ## Disclaimer
 
-These scripts are tested and work on a current (as of September 2020) Raspberry Pi OS setup on Raspberry Pi. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
+These scripts are tested and work on a current Raspberry Pi OS setup on Raspberry Pi. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
 
 ## Upgrading
 
@@ -85,12 +79,10 @@ Package and configuration choices are quite opinionated but as close to the Debi
 
 ## References
 
-- [BlueALSA: Bluetooth Audio ALSA Backend](https://github.com/Arkq/bluez-alsa)
 - [Shairport Sync: AirPlay Audio Receiver](https://github.com/mikebrady/shairport-sync)
 - [Raspotify: Spotify Connect client for the Raspberry Pi that Just Works™](https://github.com/dtcooper/raspotify)
 - [gmrender-resurrect: Headless UPnP Renderer](http://github.com/hzeller/gmrender-resurrect)
 - [Snapcast: Synchronous audio player](https://github.com/badaix/snapcast)
-- [pivumeter: ALSA plugin for displaying VU meters on various Raspberry Pi add-ons](https://github.com/pimoroni/pivumeter)
 - [Adafruit: Read-Only Raspberry Pi](https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/blob/master/read-only-fs.sh)
 
 ## License

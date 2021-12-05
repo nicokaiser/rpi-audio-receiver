@@ -3,11 +3,11 @@
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
 echo
-echo -n "Do you want to install Bluetooth Audio (BlueALSA)? [y/N] "
+echo -n "Do you want to install Bluetooth Audio (PulseAudio)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez-tools
+apt install -y --no-install-recommends bluez-tools pulseaudio-module-bluetooth
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
@@ -44,40 +44,15 @@ KillSignal=SIGUSR1
 [Install]
 WantedBy=multi-user.target
 EOF
+systemctl daemon-reload
 systemctl enable bt-agent@hci0.service
 
-# ALSA settings
-sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf
+usermod -a -G bluetooth pulse
 
-# BlueALSA
-mkdir -p /etc/systemd/system/bluealsa.service.d
-cat <<'EOF' > /etc/systemd/system/bluealsa.service.d/override.conf
-[Service]
-ExecStart=
-ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink
-RestartSec=5
-Restart=always
-EOF
-
-cat <<'EOF' > /etc/systemd/system/bluealsa-aplay.service
-[Unit]
-Description=BlueALSA aplay
-Requires=bluealsa.service
-After=bluealsa.service sound.target
-
-[Service]
-Type=simple
-User=root
-ExecStartPre=/bin/sleep 2
-ExecStart=/usr/bin/bluealsa-aplay --pcm-buffer-time=250000 00:00:00:00:00:00
-RestartSec=5
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl daemon-reload
-systemctl enable bluealsa-aplay
+# PulseAudio settings
+#sed -i.orig 's/^load-module module-udev-detect$/load-module module-udev-detect tsched=0/' /etc/pulse/system.pa
+echo "load-module module-bluetooth-policy" >> /etc/pulse/system.pa
+echo "load-module module-bluetooth-discover" >> /etc/pulse/system.pa
 
 # Bluetooth udev script
 cat <<'EOF' > /usr/local/bin/bluetooth-udev

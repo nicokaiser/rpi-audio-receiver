@@ -39,8 +39,7 @@ systemctl enable --now pulseaudio.service
 systemctl --global mask pulseaudio.socket
 
 echo "Installing components"
-#sudo ./install-bluetooth.sh # Currently not supported, needs to be updated to PulseAudio
+sudo ./install-bluetooth.sh
 sudo ./install-shairport.sh
 sudo ./install-spotify.sh
 sudo ./enable-hifiberry.sh
-sudo ./enable-read-only.sh

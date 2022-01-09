@@ -9,8 +9,6 @@ if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 apt install --no-install-recommends -y shairport-sync
 
-usermod -a -G pulse-access shairport-sync
-
 mkdir -p /etc/systemd/system/shairport-sync.service.d
 cat <<'EOF' > /etc/systemd/system/shairport-sync.service.d/override.conf
 [Service]
@@ -24,7 +22,7 @@ PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 cat <<EOF > "/etc/shairport-sync.conf"
 general = {
   name = "${PRETTY_HOSTNAME}";
-  output_backend = "pa";
+  output_backend = "alsa";
 }
 
 sessioncontrol = {

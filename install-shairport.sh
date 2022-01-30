@@ -18,12 +18,8 @@ cat <<'EOF' > /etc/systemd/system/shairport-sync.service.d/override.conf
 ExecStartPre=/bin/sleep 3
 EOF
 
-PRETTY_HOSTNAME=$(hostnamectl status --pretty)
-PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
-
 cat <<EOF > "/etc/shairport-sync.conf"
 general = {
-  name = "${PRETTY_HOSTNAME}";
   output_backend = "pa";
 }
 

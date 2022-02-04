@@ -1,15 +1,17 @@
 #!/bin/bash -e
 
+if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
+
 read -p "Hostname [$(hostname)]: " HOSTNAME
-sudo raspi-config nonint do_hostname ${HOSTNAME:-$(hostname)}
+raspi-config nonint do_hostname ${HOSTNAME:-$(hostname)}
 
 CURRENT_PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 read -p "Pretty hostname [${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}]: " PRETTY_HOSTNAME
-sudo hostnamectl set-hostname --pretty "${PRETTY_HOSTNAME:-${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}}"
+hostnamectl set-hostname --pretty "${PRETTY_HOSTNAME:-${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}}"
 
 echo "Updating packages"
-sudo apt update
-sudo apt upgrade -y
+apt update
+apt upgrade -y
 
 echo "Installing PulseAudio"
 apt install -y --no-install-recommends pulseaudio
@@ -39,7 +41,7 @@ systemctl enable --now pulseaudio.service
 systemctl --global mask pulseaudio.socket
 
 echo "Installing components"
-sudo ./install-bluetooth.sh
-sudo ./install-shairport.sh
-sudo ./install-spotify.sh
-sudo ./enable-hifiberry.sh
+./install-bluetooth.sh
+./install-shairport.sh
+./install-spotify.sh
+./enable-hifiberry.sh

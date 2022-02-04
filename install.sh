@@ -22,6 +22,7 @@ cat <<'EOF' >> /etc/pulse/client.conf
 default-server = /run/pulse/native
 autospawn = no
 EOF
+sed -i '/^load-module module-native-protocol-unix$/s/$/ auth-cookie-enabled=0 auth-anonymous=1/' /etc/pulse/system.pa
 
 # PulseAudio system daemon
 cat <<'EOF' > /etc/systemd/system/pulseaudio.service
@@ -32,7 +33,7 @@ WantedBy=multi-user.target
 [Service]
 Type=notify
 PrivateTmp=true
-ExecStart=/usr/bin/pulseaudio --daemonize=no --system --disallow-exit --disable-shm --exit-idle-time=-1 --log-target=journal
+ExecStart=/usr/bin/pulseaudio --daemonize=no --system --disallow-exit --disable-shm --exit-idle-time=-1 --log-target=journal --realtime --no-cpu-limit
 Restart=on-failure
 EOF
 systemctl enable --now pulseaudio.service

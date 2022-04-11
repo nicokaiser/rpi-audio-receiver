@@ -1,6 +1,6 @@
 # Raspberry Pi Audio Receiver
 
-A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, Spotify Connect and UPnP.
+A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, and Spotify Connect.
 
 ## ⚠️ A note on Raspberry Pi OS 10 (Legacy)
 

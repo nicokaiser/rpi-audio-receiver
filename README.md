@@ -81,6 +81,13 @@ This project does not support uninstall at all. As stated above, it is meant to 
 
 Package and configuration choices are quite opinionated but as close to the Debian defaults as possible. Customizations can be made by modifying the scripts, but the installer should stay as simple as possible, with as few choices as possible. That said, pull requests and suggestions are of course always welcome. However I might decide not to merge changes that add too much complexity.
 
+## Related projects
+
+As this project is kept very simple and opinionated, there are many forks and similar projects that are optimized for more specific requirements.
+
+- [Arcaria197/rpi-audio-receiver](https://github.com/Arcadia197/rpi-audio-receiver) - a fork that uses Raspbian 10 (legacy) and runs on Raspberry Pi Zero W hardware
+- [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) - a more sophisticated approach on this, using an entirely custom (buildroot) ecosystem
+
 ## References
 
 - [Shairport Sync: AirPlay Audio Receiver](https://github.com/mikebrady/shairport-sync)

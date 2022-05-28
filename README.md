@@ -2,12 +2,6 @@
 
 A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, and Spotify Connect.
 
-## ⚠️ A note on Raspberry Pi OS 10 (Legacy)
-
-The current version of Raspberry Pi OS (2022-01-28) is based on Debian 11 (Bullseye). This version does not contain the BlueALSA package (`bluealsa`) anymore. This repository now uses PulseAudio instead of ALSA. This may or may not work on slower devices like Raspberry Pi 1 and Raspberry Pi Zero.
-
-For these devices, you might want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality or stick with the `debian-10` branch, which works with the "Raspberry Pi OS (Legacy)".
-
 ## Features
 
 Devices like phones, tablets and computers can play audio via this receiver.
@@ -15,10 +9,16 @@ Devices like phones, tablets and computers can play audio via this receiver.
 ## Requirements
 
 - A USB Bluetooth dongle (the internal Raspberry Pi Bluetooth chipset turned out as not suited for audio playback and causes all kinds of strange connectivity problems)
-- Raspberry Pi OS Buster Lite (2021-10-30)
+- Raspberry Pi OS 11 Lite
 - Internal audio, HDMI, USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
 
 **Again: do not try to use the internal Bluetooth chip, this will only bring you many hours of frustration.**
+
+## ⚠️ A note on Raspberry Pi OS 10 (Legacy)
+
+The current version of Raspberry Pi OS (2022-01-28) is based on Debian 11 (Bullseye). This version does not contain the BlueALSA package (`bluealsa`) anymore. This repository now uses PulseAudio instead of ALSA. This may or may not work on slower devices like Raspberry Pi 1 and Raspberry Pi Zero.
+
+For these devices, you might want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality or stick with the `debian-10` branch, which works with the "Raspberry Pi OS (Legacy)".
 
 ## Installation
 

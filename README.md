@@ -31,6 +31,8 @@ The installation script asks whether to install each component.
     cd rpi-audio-receiver-main
     sudo ./install.sh
 
+    reboot
+
 ### Basic setup
 
 Lets you choose the hostname and the visible device name ("pretty hostname") which is displayed as Bluetooth name, in AirPlay clients and in Spotify.

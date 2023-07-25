@@ -41,6 +41,16 @@ Lets you choose the hostname and the visible device name ("pretty hostname") whi
 
 Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through PulseAudio. A udev script is installed that disables discoverability while connected.
 
+### Bluetooth Configuration
+```
+sudo bluetoothctl
+power on
+agent on
+# Now search for available bluetooth devices from your device
+# Once paired note down the MAC address of your device 
+trust 00:00:00:00:00:00 # Put device MAC address here so after reboot it can automatically re-connect again
+```
+
 ### AirPlay 1
 
 Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.

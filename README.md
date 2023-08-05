@@ -1,6 +1,6 @@
 # Raspberry Pi Audio Receiver
 
-A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, and Spotify Connect.
+A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 2, and Spotify Connect.
 
 ## Features
 
@@ -51,9 +51,9 @@ agent on
 trust 00:00:00:00:00:00 # Put device MAC address here so after reboot it can automatically re-connect again
 ```
 
-### AirPlay 1
+### AirPlay 2
 
-Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.
+Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay 2 Audio Receiver.
 
 ### Spotify Connect
 

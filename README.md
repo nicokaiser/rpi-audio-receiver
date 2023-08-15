@@ -14,12 +14,6 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 **Again: do not try to use the internal Bluetooth chip, this will only bring you many hours of frustration.**
 
-## ⚠️ A note on Raspberry Pi OS 10 (Legacy)
-
-The current version of Raspberry Pi OS (2022-01-28) is based on Debian 11 (Bullseye). This version does not contain the BlueALSA package (`bluealsa`) anymore. This repository now uses PulseAudio instead of ALSA. This may or may not work on slower devices like Raspberry Pi 1 and Raspberry Pi Zero.
-
-For these devices, you might want to try [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) for similar functionality or stick with the `debian-10` branch, which works with the "Raspberry Pi OS (Legacy)".
-
 ## Installation
 
 The installation script asks whether to install each component.
@@ -42,14 +36,13 @@ Lets you choose the hostname and the visible device name ("pretty hostname") whi
 Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through PulseAudio. A udev script is installed that disables discoverability while connected.
 
 ### Bluetooth Configuration
-```
-sudo bluetoothctl
-power on
-agent on
-# Now search for available bluetooth devices from your device
-# Once paired note down the MAC address of your device 
-trust 00:00:00:00:00:00 # Put device MAC address here so after reboot it can automatically re-connect again
-```
+
+    sudo bluetoothctl
+    power on
+    agent on
+    # Now search for available bluetooth devices from your device
+    # Once paired note down the MAC address of your device 
+    trust 00:00:00:00:00:00 # Put device MAC address here so after reboot it can automatically re-connect again
 
 ### AirPlay 2
 

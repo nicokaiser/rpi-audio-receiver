@@ -3,11 +3,23 @@
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
 echo
-echo -n "Do you want to install Bluetooth Audio (PulseAudio)? [y/N] "
+echo -n "Do you want to install Bluetooth Audio (ALSA)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-apt install -y --no-install-recommends bluez-tools pulseaudio-module-bluetooth
+## Bluetooth Audio ALSA Backend (bluez-alsa-utils)
+apt install -y --no-install-recommends autoconf automake build-essential libtool alsa-utils bluez-tools libasound2-dev libbluetooth-dev libdbus-1-dev libglib2.0-dev libsbc-dev libldacbt-enc-dev libldacbt-abr-dev libopenaptx-dev libfdk-aac-dev
+wget -O bluez-alsa-4.1.1.zip https://github.com/arkq/bluez-alsa/archive/refs/tags/v4.1.1.zip
+unzip bluez-alsa-4.1.1.zip
+cd bluez-alsa-4.1.1
+autoreconf -fi
+./configure --enable-ldac --enable-aptx --with-libopenaptx --enable-ofono --enable-systemd --enable-aac
+make -j $(nproc)
+make install
+cd ..
+rm -rf bluez-alsa-4.1.1
+systemctl enable bluealsa
+systemctl enable bluealsa-aplay
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
@@ -19,13 +31,7 @@ DiscoverableTimeout = 0
 AutoEnable=true
 EOF
 
-# Make Bluetooth discoverable after initialisation
-mkdir -p /etc/systemd/system/bthelper@.service.d
-cat <<'EOF' > /etc/systemd/system/bthelper@.service.d/override.conf
-[Service]
-Type=oneshot
-EOF
-
+# Bluetooth Agent
 cat <<'EOF' > /etc/systemd/system/bt-agent@.service
 [Unit]
 Description=Bluetooth Agent
@@ -46,13 +52,6 @@ WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
 systemctl enable bt-agent@hci0.service
-
-usermod -a -G bluetooth pulse
-
-# PulseAudio settings
-#sed -i.orig 's/^load-module module-udev-detect$/load-module module-udev-detect tsched=0/' /etc/pulse/system.pa
-echo "load-module module-bluetooth-policy" >> /etc/pulse/system.pa
-echo "load-module module-bluetooth-discover" >> /etc/pulse/system.pa
 
 # Bluetooth udev script
 cat <<'EOF' > /usr/local/bin/bluetooth-udev

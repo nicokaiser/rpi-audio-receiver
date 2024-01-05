@@ -8,18 +8,7 @@ read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 ## Bluetooth Audio ALSA Backend (bluez-alsa-utils)
-apt install -y --no-install-recommends autoconf automake build-essential libtool alsa-utils bluez-tools libasound2-dev libbluetooth-dev libdbus-1-dev libglib2.0-dev libsbc-dev libldacbt-enc-dev libldacbt-abr-dev libopenaptx-dev libfdk-aac-dev
-wget -O bluez-alsa-4.1.1.zip https://github.com/arkq/bluez-alsa/archive/refs/tags/v4.1.1.zip
-unzip bluez-alsa-4.1.1.zip
-cd bluez-alsa-4.1.1
-autoreconf -fi
-./configure --enable-ldac --enable-aptx --with-libopenaptx --enable-ofono --enable-systemd --enable-aac
-make -j $(nproc)
-make install
-cd ..
-rm -rf bluez-alsa-4.1.1
-systemctl enable bluealsa
-systemctl enable bluealsa-aplay
+apt install -y --no-install-recommends bluez-tools bluez-alsa-utils
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf

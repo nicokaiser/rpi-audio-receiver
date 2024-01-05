@@ -24,13 +24,5 @@ LIBRESPOT_BITRATE="320"
 LIBRESPOT_INITIAL_VOLUME="100"
 EOF
 
-mkdir -p /etc/systemd/system/raspotify.service.d
-cat <<'EOF' > /etc/systemd/system/raspotify.service.d/override.conf
-[Unit]
-Wants=pulseaudio.service
-[Service]
-SupplementaryGroups=pulse-access
-EOF
 systemctl daemon-reload
-
 systemctl enable raspotify

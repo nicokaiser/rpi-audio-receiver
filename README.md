@@ -9,7 +9,7 @@ Devices like phones, tablets and computers can play audio via this receiver.
 ## Requirements
 
 - A USB Bluetooth dongle (the internal Raspberry Pi Bluetooth chipset turned out as not suited for audio playback and causes all kinds of strange connectivity problems)
-- Raspberry Pi OS 11 Lite
+- Raspberry Pi OS 12 Lite (64-bit)
 - Internal audio, HDMI, USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
 
 **Again: do not try to use the internal Bluetooth chip, this will only bring you many hours of frustration.**
@@ -33,7 +33,7 @@ Lets you choose the hostname and the visible device name ("pretty hostname") whi
 
 ### Bluetooth
 
-Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through PulseAudio. A udev script is installed that disables discoverability while connected.
+Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through ALSA. A udev script is installed that disables discoverability while connected.
 
 ### Bluetooth Configuration
 
@@ -88,15 +88,15 @@ Package and configuration choices are quite opinionated but as close to the Debi
 
 ## Related projects
 
-As this project is kept very simple and opinionated, there are many forks and similar projects that are optimized for more specific requirements.
+There are many forks and similar projects that are optimized for more specific requirements.
 
 - [Arcaria197/rpi-audio-receiver](https://github.com/Arcadia197/rpi-audio-receiver) - a fork that uses Raspbian 10 (legacy) and runs on Raspberry Pi Zero W hardware
 - [HiFiBerryOS](https://github.com/hifiberry/hifiberry-os/) - a more sophisticated approach on this, using an entirely custom (buildroot) ecosystem
 
 ## References
 
-- [Shairport Sync: AirPlay Audio Receiver](https://github.com/mikebrady/shairport-sync)
-- [Raspotify: Spotify Connect client for the Raspberry Pi that Just Works™](https://github.com/dtcooper/raspotify)
+- [Shairport Sync: AirPlay 2 audio player](https://github.com/mikebrady/shairport-sync)
+- [Raspotify: A Spotify Connect client that mostly Just Works™](https://github.com/dtcooper/raspotify)
 
 ## License
 

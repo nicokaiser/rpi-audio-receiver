@@ -154,7 +154,7 @@ install_shairport() {
     rm -rf shairport-sync-${SHAIRPORT_SYNC_VERSION}
 
     # Configure Shairport Sync
-    sudo tee /etc/shairport-sync.conf >/dev/null <<'EOF'
+    sudo tee /etc/shairport-sync.conf >/dev/null <<EOF
 general = {
   name = "${PRETTY_HOSTNAME:-$(hostname)}";
   output_backend = "alsa";
@@ -181,7 +181,7 @@ install_raspotify() {
     LIBRESPOT_NAME="${PRETTY_HOSTNAME// /-}"
     LIBRESPOT_NAME=${LIBRESPOT_NAME:-$(hostname)}
 
-    sudo tee /etc/raspotify/conf >/dev/null <<'EOF'
+    sudo tee /etc/raspotify/conf >/dev/null <<EOF
 LIBRESPOT_QUIET=
 LIBRESPOT_AUTOPLAY=
 LIBRESPOT_DISABLE_AUDIO_CACHE=

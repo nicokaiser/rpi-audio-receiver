@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefile
+set -euo pipefail
 
 NQPTP_VERSION="1.2.4"
 SHAIRPORT_SYNC_VERSION="4.3.2"

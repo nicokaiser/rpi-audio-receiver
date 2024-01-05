@@ -23,9 +23,9 @@ The installation script asks whether to install each component.
     rm main.zip
 
     cd rpi-audio-receiver-main
-    sudo ./install.sh
+    ./install.sh
 
-    reboot
+    sudo reboot
 
 ### Basic setup
 

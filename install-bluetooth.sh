@@ -1,14 +1,12 @@
 #!/bin/bash -e
 
-if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
-
 echo
 echo -n "Do you want to install Bluetooth Audio (ALSA)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 ## Bluetooth Audio ALSA Backend (bluez-alsa-utils)
-apt install -y --no-install-recommends bluez-tools bluez-alsa-utils
+sudo apt install -y --no-install-recommends bluez-tools bluez-alsa-utils
 
 # Bluetooth settings
 cat <<'EOF' > /etc/bluetooth/main.conf
@@ -21,7 +19,7 @@ AutoEnable=true
 EOF
 
 # Bluetooth Agent
-cat <<'EOF' > /etc/systemd/system/bt-agent@.service
+sudo tee /etc/systemd/system/bt-agent@.service <<'EOF'
 [Unit]
 Description=Bluetooth Agent
 Requires=bluetooth.service
@@ -39,11 +37,11 @@ KillSignal=SIGUSR1
 [Install]
 WantedBy=multi-user.target
 EOF
-systemctl daemon-reload
-systemctl enable bt-agent@hci0.service
+sudo systemctl daemon-reload
+sudo systemctl enable bt-agent@hci0.service
 
 # Bluetooth udev script
-cat <<'EOF' > /usr/local/bin/bluetooth-udev
+sudo tee /usr/local/bin/bluetooth-udev <<'EOF'
 #!/bin/bash
 if [[ ! $NAME =~ ^\"([0-9A-F]{2}[:-]){5}([0-9A-F]{2})\"$ ]]; then exit 0; fi
 
@@ -61,9 +59,9 @@ if [ "$action" = "remove" ]; then
     bluetoothctl discoverable on
 fi
 EOF
-chmod 755 /usr/local/bin/bluetooth-udev
+sudo chmod 755 /usr/local/bin/bluetooth-udev
 
-cat <<'EOF' > /etc/udev/rules.d/99-bluetooth-udev.rules
+sudo tee /etc/udev/rules.d/99-bluetooth-udev.rules <<'EOF'
 SUBSYSTEM=="input", GROUP="input", MODE="0660"
 KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluetooth-udev"
 EOF

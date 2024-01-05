@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
-
 NQPTP_VERSION=1.2.4
 SHAIRPORT_SYNC_VERSION=4.3.2
 
@@ -10,7 +8,7 @@ echo -n "Do you want to install Shairport Sync AirPlay 2 Audio Receiver (Shairpo
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-apt install --no-install-recommends autoconf automake build-essential libtool git autoconf automake libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev libplist-dev libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
+sudo apt install --no-install-recommends autoconf automake build-essential libtool git autoconf automake libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev libplist-dev libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
 
 # ALAC
 wget -O alac-master.zip https://github.com/mikebrady/alac/archive/refs/heads/master.zip
@@ -19,8 +17,8 @@ cd alac-master
 autoreconf -fi
 ./configure
 make -j $(nproc)
-make install
-ldconfig
+sudo make install
+sudo ldconfig
 cd ..
 rm -rf alac-master
 
@@ -31,7 +29,7 @@ cd nqptp-${NQPTP_VERSION}
 autoreconf -fi
 ./configure --with-systemd-startup
 make -j $(nproc)
-make install
+sudo make install
 cd ..
 rm -rf nqptp-${NQPTP_VERSION}
 
@@ -42,13 +40,13 @@ cd shairport-sync-${SHAIRPORT_SYNC_VERSION}
 autoreconf -fi
 ./configure --sysconfdir=/etc --with-alsa --with-soxr --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2 --with-apple-alac
 make -j $(nproc)
-make install
+sudo make install
 cd ..
 rm -rf shairport-sync-${SHAIRPORT_SYNC_VERSION}
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
-cat <<EOF > "/etc/shairport-sync.conf"
+tee /etc/shairport-sync.conf <<'EOF'
 general = {
   name = "${PRETTY_HOSTNAME}";
   output_backend = "alsa";
@@ -59,6 +57,6 @@ sessioncontrol = {
 };
 EOF
 
-usermod -a -G gpio shairport-sync
-systemctl enable --now nqptp
-systemctl enable --now shairport-sync
+sudo usermod -a -G gpio shairport-sync
+sudo systemctl enable --now nqptp
+sudo systemctl enable --now shairport-sync

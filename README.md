@@ -18,14 +18,8 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 The installation script asks whether to install each component.
 
-    wget -q https://github.com/nicokaiser/rpi-audio-receiver/archive/main.zip
-    unzip main.zip
-    rm main.zip
-
-    cd rpi-audio-receiver-main
-    ./install.sh
-
-    sudo reboot
+    wget https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/main/install.sh
+    bash install.sh
 
 ### Basic setup
 

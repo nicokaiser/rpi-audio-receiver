@@ -49,6 +49,26 @@ Installs [Raspotify](https://github.com/dtcooper/raspotify), an open source Spot
 
 To avoid SD card corruption when powering off, you can boot Raspberry Pi OS in read-only mode. This can be achieved using the `raspi-config` script (in the "Performance" section).
 
+### Disable Wi-Fi power management
+
+Disabling Wi-Fi power management might resolve some connection issues:
+
+```sh
+sudo nmcli connection modify preconfigured wifi.powersave 2
+```
+
+### Disable internal Bluetooth and Audio
+
+When an external audio device (HDMI, USB, I2S) is used, the internal audio can be disabled in `/boot/firmware/config.txt` (replace `hifiberry-dacplus` with the overlay which fits your installation):
+
+```
+...
+dtoverlay=disable-bt
+dtparam=audio=off
+dtoverlay=vc4-kms-v3d,noaudio
+dtoverlay=hifiberry-dacplus
+```
+
 ### Add Bluetooth devices
 
 The device should be visible for new Bluetooth connections, but in some cases you might need to pair them manually:

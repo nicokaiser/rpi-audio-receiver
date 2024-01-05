@@ -43,7 +43,64 @@ Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay 2
 
 Installs [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi.
 
-## Optional steps
+## Additional steps
+
+### Enable HiFiBerry device
+
+When using a HiFiBerry or similar I2C device, a device tree overlay needs to be enabled in `/boot/firmware/config.txt` (replace `dacplus` with the overlay that fits your hardware):
+
+```
+...
+dtoverlay=hifiberry-dacplus
+```
+
+To enable the software volume mixer, `/etc/asound.conf` needs to be created:
+
+```
+defaults.pcm.card 0
+defaults.ctl.card 0
+
+pcm.hifiberry {
+  type hw
+  card 0
+  device 0
+}
+pcm.dmixer {
+  type dmix
+  ipc_key 1024
+  ipc_perm 0666
+  slave.pcm "hifiberry"
+  slave {
+    period_time 0
+    period_size 1024
+    buffer_size 8192
+    rate 44100
+    format S32_LE
+  }
+  bindings {
+    0 0
+    1 1
+  }
+}
+ctl.dmixer {
+  type hw
+  card 0
+}
+pcm.softvol {
+  type softvol
+  slave.pcm "dmixer"
+  control {
+    name "Softvol"
+    card 0
+  }
+  min_dB -90.2
+  max_dB 0.0
+}
+pcm.!default {
+  type plug
+  slave.pcm "softvol"
+}
+```
 
 ### Read-only mode
 

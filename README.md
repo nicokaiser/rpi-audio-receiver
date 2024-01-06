@@ -21,6 +21,8 @@ The installation script asks whether to install each component.
     wget https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/main/install.sh
     bash install.sh
 
+**Note**: the installation process is not reversible, there is no uninstall. The script is meant to be run on a clean device that is not used for anything else.
+
 ### Basic setup
 
 Lets you choose the hostname and the visible device name ("pretty hostname") which is displayed as Bluetooth name, in AirPlay clients and in Spotify.
@@ -216,10 +218,6 @@ These scripts are tested and work on a current Raspberry Pi OS setup on Raspberr
 This project does not really support upgrading to newer versions of this script. It is meant to be adjusted to your needs and run on a clean Raspberry Pi OS install. When something goes wrong, the easiest way is to just wipe the SD card and start over. Since apart from Bluetooth pairing information all parts are stateless, this should be ok.
 
 Updating the system using `apt-get upgrade` should work however.
-
-## Uninstallation
-
-This project does not support uninstall at all. As stated above, it is meant to run on a dedicated device on a clean Raspberry Pi OS. If you choose to use this script along with other services on the same device, or install it on an already configured device, this can lead to unpredictable behaviour and can damage the existing installation permanently.
 
 ## Contributing
 

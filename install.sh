@@ -22,7 +22,7 @@ verify_os() {
 
     . /etc/os-release
 
-    if [ "$ID" != "debian" ] || [ "$VERSION_ID" != "12" ]; then
+    if [ "$ID" != "debian" && "$ID" != "raspbian" ] || [ "$VERSION_ID" != "12" ]; then
         echo $MSG
         exit 1
     fi

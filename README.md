@@ -120,11 +120,17 @@ sudo nmcli connection modify preconfigured wifi.powersave 2
 When an external audio device (HDMI, USB, I2S) is used, the internal audio can be disabled in `/boot/firmware/config.txt` (replace `hifiberry-dacplus` with the overlay which fits your installation):
 
 ```
-...
 dtoverlay=disable-bt
 dtparam=audio=off
+dtoverlay=pi3-disable-bt
+```
+```
 dtoverlay=vc4-kms-v3d,noaudio
-dtoverlay=hifiberry-dacplus
+dtoverlay=dwc2,dr_mode=host
+```
+#### Enable Raspberry Pi DigiAmp Plus
+```
+dtoverlay=rpi-digiampplus,auto_mute_amp
 ```
 
 ### Add Bluetooth devices

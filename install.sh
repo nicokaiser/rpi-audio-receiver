@@ -122,7 +122,7 @@ KillSignal=SIGUSR1
 WantedBy=multi-user.target
 EOF
     sudo systemctl daemon-reload
-    sudo systemctl enable bt-agent@hci0.service
+    sudo systemctl enable --now bt-agent@hci0.service
 
     # Bluetooth udev script
     sudo tee /usr/local/bin/bluetooth-udev >/dev/null <<'EOF'
@@ -245,7 +245,7 @@ LIBRESPOT_INITIAL_VOLUME="90"
 EOF
 
     sudo systemctl daemon-reload
-    sudo systemctl enable raspotify
+    sudo systemctl enable --now raspotify
 }
 
 trap cleanup EXIT

@@ -22,26 +22,71 @@ verify_os() {
 
     . /etc/os-release
 
-    if [ "$ID" != "debian" && "$ID" != "raspbian" ] || [ "$VERSION_ID" != "12" ]; then
+    if (( "$ID" != "debian" && "$ID" != "raspbian" )) || (( "$VERSION_ID" != "12" )); then
         echo $MSG
         exit 1
     fi
 }
 
 set_hostname() {
-    CURRENT_PRETTY_HOSTNAME=$(hostnamectl status --pretty)
+    if [[ -z $changeHostname ]]; then 
+      if ! $changeHostname ; then return; fi
+      CURRENT_PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 
-    read -p "Hostname [$(hostname)]: " HOSTNAME
-    sudo raspi-config nonint do_hostname ${HOSTNAME:-$(hostname)}
+      read -p "Hostname [$(hostname)]: " HOSTNAME
+      sudo raspi-config nonint do_hostname ${HOSTNAME:-$(hostname)}
 
-    read -p "Pretty hostname [${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}]: " PRETTY_HOSTNAME
-    PRETTY_HOSTNAME="${PRETTY_HOSTNAME:-${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}}"
-    sudo hostnamectl set-hostname --pretty "$PRETTY_HOSTNAME"
+      read -p "Pretty hostname [${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}]: " PRETTY_HOSTNAME
+      PRETTY_HOSTNAME="${PRETTY_HOSTNAME:-${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}}"
+      sudo hostnamectl set-hostname --pretty "$PRETTY_HOSTNAME"
+    fi
+}
+
+install_snapcast(){
+    if [[ -z $snapclientInstall]]; then 
+      read -p "Do you want to install UPnP renderer? [y/N] " REPLY
+      #https://github.com/Torgee/rpi-audio-receiver/blob/master/install-snapcast.sh
+      if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    fi
+    if ! $snapclientInstall; then return; fi
+
+    echo "Installing snapcast client"
+
+    sudo apt install --no-install-recommends -y snapclient    
+}
+
+install_UPnP_renderer(){
+    if [[ -z $UPnPRenderer ]]; then 
+      read -p "Do you want to install UPnP renderer? [y/N] " REPLY
+      #https://github.com/Torgee/rpi-audio-receiver/blob/master/install-upnp.sh
+      if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    fi
+    if ! $UPnPRenderer ; then return; fi
+
+    echo "Installing UPnP renderer (gmrender-resurrect)"
+
+    sudo apt update
+    sudo apt install -y --no-install-recommends gmediarender gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-alsa
+
+    ${PRETTY_HOSTNAME:-$(hostname)}
+    sudo tee /etc/default/gmediarender >/dev/null <<'EOF'
+ENABLED=1
+DAEMON_USER="nobody:audio"
+UPNP_DEVICE_NAME="${PRETTY_HOSTNAME}"
+INITIAL_VOLUME_DB=0.0
+ALSA_DEVICE="sysdefault"
+EOF
+
+    sudo systemctl enable --now gmediarender
+
 }
 
 install_bluetooth() {
-    read -p "Do you want to install Bluetooth Audio (ALSA)? [y/N] " REPLY
-    if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    if [[ -z $bluetoothInstall ]]; then 
+      read -p "Do you want to install Bluetooth Audio (ALSA)? [y/N] " REPLY
+      if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    fi
+    if ! $bluetoothInstall ; then return; fi
 
     # Bluetooth Audio ALSA Backend (bluez-alsa-utils)
     sudo apt update
@@ -107,8 +152,11 @@ EOF
 }
 
 install_shairport() {
-    read -p "Do you want to install Shairport Sync (AirPlay 2 audio player)? [y/N] " REPLY
-    if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    if [[ -z $shairportInstall ]]; then 
+      read -p "Do you want to install Shairport Sync (AirPlay 2 audio player)? [y/N] " REPLY
+      if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    fi
+    if ! $shairportInstall; then return; fi
 
     sudo apt update
     sudo apt install -y --no-install-recommends wget unzip autoconf automake build-essential libtool git autoconf automake libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev libplist-dev libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt20-dev xxd
@@ -171,8 +219,11 @@ EOF
 }
 
 install_raspotify() {
-    read -p "Do you want to install Raspotify (Spotify Connect)? [y/N] " REPLY
-    if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    if [[ -z $raspotifyInstall ]]; then 
+      read -p "Do you want to install Raspotify (Spotify Connect)? [y/N] " REPLY
+      if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    fi
+    if ! $raspotifyInstall; then return; fi
 
     # Install Raspotify
     curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
@@ -201,8 +252,40 @@ trap cleanup EXIT
 
 echo "Raspberry Pi Audio Receiver"
 
+changeHostname=false
+bluetoothInstall=false
+shairportInstall=false
+raspotifyInstall=false
+UPnPRendererInstall=false 
+snapclientInstall=false 
+while getopts ":nbsr" opt; do
+  case "$opt" in
+    n) changeHostname=true ;;
+    b) bluetoothInstall=true;;
+    s) shairportInstall=true;;
+    r) raspotifyInstall=true;;
+    u) UPnPRendererInstall=true;;
+    u) snapclientInstall=true;;
+    ?) echo "script usage: $(basename \$0) [-n][-b][-s][-r]" 
+      exit 1
+      ;;
+  esac
+done
+
+if (( $OPTIND == 1 )); then
+  echo "Default option"
+  changeHostname=""
+  bluetoothInstall=""
+  shairportInstall=""
+  raspotifyInstall=""
+  UPnPRendererInstall=""
+  snapclientInstall=""
+fi
+
 verify_os
-set_hostname
-install_bluetooth
-install_shairport
-install_raspotify
+set_hostname $changeHostname
+install_bluetooth $bluetoothInstall
+install_shairport $shairportInstall
+install_raspotify $raspotifyInstall
+install_snapclient $snapclientInstall
+install_UPnP_renderer $UPnPRendererInstall

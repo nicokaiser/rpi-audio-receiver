@@ -110,6 +110,19 @@ Disabling Wi-Fi power management might resolve some connection issues:
 sudo nmcli connection modify preconfigured wifi.powersave 2
 ```
 
+### Enabling Audio DAC Amp Hats:
+
+|IQaudio Card| /boot/firmware/config.txt|
+|---|---|
+| DAC+ | ```dtoverlay=iqaudio-dacplus ``` |
+| DAC PRO | ```dtoverlay=iqaudio-dacplus ``` |
+| DigiAMP+ |  ```dtoverlay=iqaudio-dacplus,unmute_amp ``` or ``` dtoverlay=iqaudio-dacplus,auto_mute_amp ``` |
+| Codec Zero |```dtoverlay=iqaudio-codec ```|
+| |```dtoverlay=rpi-codeczero ```|
+| |```dtoverlay=rpi-dacplus ```|
+| |```dtoverlay=rpi-dacpro ```|
+| |```dtoverlay=rpi-digiampplus ```|
+
 ### Disable internal Bluetooth and Audio
 
 When an external audio device (HDMI, USB, I2S) is used, the internal audio can be disabled in `/boot/firmware/config.txt` (replace `hifiberry-dacplus` with the overlay which fits your installation):

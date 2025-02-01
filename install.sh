@@ -43,7 +43,7 @@ set_hostname() {
 }
 
 install_snapcast(){
-    if [[ -z $snapclientInstall]]; then 
+    if [[ -z $snapclientInstall ]]; then 
       read -p "Do you want to install UPnP renderer? [y/N] " REPLY
       #https://github.com/Torgee/rpi-audio-receiver/blob/master/install-snapcast.sh
       if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
@@ -241,7 +241,7 @@ LIBRESPOT_ENABLE_VOLUME_NORMALISATION=on
 LIBRESPOT_NAME="${LIBRESPOT_NAME}"
 LIBRESPOT_DEVICE_TYPE="avr"
 LIBRESPOT_BITRATE="320"
-LIBRESPOT_INITIAL_VOLUME="90"
+LIBRESPOT_INITIAL_VOLUME="50"
 EOF
 
     sudo systemctl daemon-reload
@@ -258,15 +258,15 @@ shairportInstall=false
 raspotifyInstall=false
 UPnPRendererInstall=false 
 snapclientInstall=false 
-while getopts ":nbsr" opt; do
+while getopts "nbsruc" opt; do
   case "$opt" in
     n) changeHostname=true ;;
     b) bluetoothInstall=true;;
     s) shairportInstall=true;;
     r) raspotifyInstall=true;;
     u) UPnPRendererInstall=true;;
-    u) snapclientInstall=true;;
-    ?) echo "script usage: $(basename \$0) [-n][-b][-s][-r]" 
+    c) snapclientInstall=true;;
+    ?) echo "script usage: $(basename $0) [-n][-b][-s][-r][-u][-c]" 
       exit 1
       ;;
   esac
@@ -289,3 +289,4 @@ install_shairport $shairportInstall
 install_raspotify $raspotifyInstall
 install_snapclient $snapclientInstall
 install_UPnP_renderer $UPnPRendererInstall
+

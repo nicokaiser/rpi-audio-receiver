@@ -12,18 +12,52 @@ cleanup() {
     fi
 }
 
+log_green() {
+  local text="$1"
+  GREEN="\033[0;32m"
+  printf "${GREEN} ${text}\r\n"
+}
+
+log_red() {
+  local text="$1"
+  RED="\033[0;31m"
+  echo $text
+  printf "${RED} ${text}\r\n"
+}
+
+banner(){
+  # Get the terminal width
+  width=$(tput cols)
+  # Print a line of '=' characters
+  printf '=%.0s' $(seq 1 $width)
+}
+
+apt_update_netselect(){
+  sudo apt-get update
+  log_green "installing netselect-apt and executing"
+  sudo apt-get install netselect-apt -y
+  sudo netselect-apt
+}
+
+update_latest(){
+  sudo apt-get update 
+  sudo apt-get upgrade -y
+}
+
 verify_os() {
     MSG="Unsupported OS: Raspberry Pi OS 12 (bookworm) is required."
 
     if [ ! -f /etc/os-release ]; then
-        echo $MSG
+        log_red $MSG
+        banner
         exit 1
     fi
 
     . /etc/os-release
 
     if [ "$ID" != "debian" ] && [ "$ID" != "raspbian" ] || [ "$VERSION_ID" != "12" ]; then
-        echo $MSG
+        log_red $MSG
+        banner
         exit 1
     fi
 }
@@ -31,6 +65,10 @@ verify_os() {
 set_hostname() {
     if [[ -z $changeHostname ]]; then 
       if ! $changeHostname ; then return; fi
+
+      log_green "Device Name Settings"
+      banner
+
       CURRENT_PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 
       read -p "Hostname [$(hostname)]: " HOSTNAME
@@ -50,7 +88,8 @@ install_snapcast(){
     fi
     if ! $snapclientInstall; then return; fi
 
-    echo "Installing snapcast client"
+    log_green "Installing snapcast client"
+    banner
 
     sudo apt install --no-install-recommends -y snapclient    
 }
@@ -63,7 +102,8 @@ install_UPnP_renderer(){
     fi
     if ! $UPnPRenderer ; then return; fi
 
-    echo "Installing UPnP renderer (gmrender-resurrect)"
+    log_green "Installing UPnP renderer (gmrender-resurrect)"
+    banner
 
     sudo apt update
     sudo apt install -y --no-install-recommends gmediarender gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-alsa
@@ -88,11 +128,14 @@ install_bluetooth() {
     fi
     if ! $bluetoothInstall ; then return; fi
 
-    # Bluetooth Audio ALSA Backend (bluez-alsa-utils)
+    log_green "Bluetooth installation"
+    banner
+
+    log_green "Bluetooth: Setting Audio ALSA Backend (bluez-alsa-utils)"
     sudo apt update
     sudo apt install -y --no-install-recommends bluez-tools bluez-alsa-utils
 
-    # Bluetooth settings
+    log_green "Bluetooth: creating basic settings"
     sudo tee /etc/bluetooth/main.conf >/dev/null <<'EOF'
 [General]
 Class = 0x200414
@@ -102,7 +145,7 @@ DiscoverableTimeout = 0
 AutoEnable=true
 EOF
 
-    # Bluetooth Agent
+    log_green "Bluetooth: configuring Agent"
     sudo tee /etc/systemd/system/bt-agent@.service >/dev/null <<'EOF'
 [Unit]
 Description=Bluetooth Agent
@@ -124,7 +167,7 @@ EOF
     sudo systemctl daemon-reload
     sudo systemctl enable --now bt-agent@hci0.service
 
-    # Bluetooth udev script
+    log_green "Bluetooth: installing udev script"
     sudo tee /usr/local/bin/bluetooth-udev >/dev/null <<'EOF'
 #!/bin/bash
 if [[ ! $NAME =~ ^\"([0-9A-F]{2}[:-]){5}([0-9A-F]{2})\"$ ]]; then exit 0; fi
@@ -157,6 +200,9 @@ install_shairport() {
       if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
     fi
     if ! $shairportInstall; then return; fi
+    
+    log_green "Installing Shairport Sync"
+    banner
 
     sudo apt update
     sudo apt install -y --no-install-recommends wget unzip autoconf automake build-essential libtool git autoconf automake libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev libplist-dev libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt20-dev xxd
@@ -167,7 +213,7 @@ install_shairport() {
 
     cd $TMP_DIR
 
-    # Install ALAC
+    log_green "Shairport: Install ALAC"
     wget -O alac-master.zip https://github.com/mikebrady/alac/archive/refs/heads/master.zip
     unzip alac-master.zip
     cd alac-master
@@ -179,7 +225,7 @@ install_shairport() {
     cd ..
     rm -rf alac-master
 
-    # Install NQPTP
+    log_green "Shairport: Install NQPTP"
     wget -O nqptp-${NQPTP_VERSION}.zip https://github.com/mikebrady/nqptp/archive/refs/tags/${NQPTP_VERSION}.zip
     unzip nqptp-${NQPTP_VERSION}.zip
     cd nqptp-${NQPTP_VERSION}
@@ -190,7 +236,7 @@ install_shairport() {
     cd ..
     rm -rf nqptp-${NQPTP_VERSION}
 
-    # Install Shairport Sync
+    log_green "Shairport: Install Shairport Sync"
     wget -O shairport-sync-${SHAIRPORT_SYNC_VERSION}.zip https://github.com/mikebrady/shairport-sync/archive/refs/tags/${SHAIRPORT_SYNC_VERSION}.zip
     unzip shairport-sync-${SHAIRPORT_SYNC_VERSION}.zip
     cd shairport-sync-${SHAIRPORT_SYNC_VERSION}
@@ -201,7 +247,7 @@ install_shairport() {
     cd ..
     rm -rf shairport-sync-${SHAIRPORT_SYNC_VERSION}
 
-    # Configure Shairport Sync
+    log_green "Shairport: Configure Shairport Sync"
     sudo tee /etc/shairport-sync.conf >/dev/null <<EOF
 general = {
   name = "${PRETTY_HOSTNAME:-$(hostname)}";
@@ -225,10 +271,13 @@ install_raspotify() {
     fi
     if ! $raspotifyInstall; then return; fi
 
+    log_green "Installing Install Raspotify"
+    banner
+
     # Install Raspotify
     curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
 
-    # Configure Raspotify
+    log_green "Raspotify: Configure Raspotify"
     LIBRESPOT_NAME="${PRETTY_HOSTNAME// /-}"
     LIBRESPOT_NAME=${LIBRESPOT_NAME:-$(hostname)}
 
@@ -244,13 +293,15 @@ LIBRESPOT_BITRATE="320"
 LIBRESPOT_INITIAL_VOLUME="50"
 EOF
 
+    log_green "Raspotify: daemon reload and enable"
     sudo systemctl daemon-reload
     sudo systemctl enable --now raspotify
 }
 
 trap cleanup EXIT
 
-echo "Raspberry Pi Audio Receiver"
+log_green "Raspberry Pi Audio Receiver"
+banner
 
 changeHostname=false
 bluetoothInstall=false
@@ -283,6 +334,7 @@ if (( $OPTIND == 1 )); then
 fi
 
 verify_os
+apt_update_netselect
 set_hostname $changeHostname
 install_bluetooth $bluetoothInstall
 install_shairport $shairportInstall

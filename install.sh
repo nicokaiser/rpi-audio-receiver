@@ -15,14 +15,16 @@ cleanup() {
 log_green() {
   local text="$1"
   GREEN="\033[0;32m"
-  printf "${GREEN} ${text}\r\n"
+  NORMAL=$(tput sgr0)
+  printf "${GREEN} ${text}${NORMAL}\r\n"
 }
 
 log_red() {
   local text="$1"
   RED="\033[0;31m"
+  NORMAL=$(tput sgr0)
   echo $text
-  printf "${RED} ${text}\r\n"
+  printf "${RED} ${text}${NORMAL}\r\n"
 }
 
 banner(){
@@ -33,15 +35,18 @@ banner(){
 }
 
 apt_update_netselect(){
-  sudo apt-get update
-  log_green "installing netselect-apt and executing"
-  sudo apt-get install netselect-apt -y
-  sudo netselect-apt
+    banner
+    read -p "Do you want to change apt (netselect-apt)? [y/N] " REPLY
+    if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+    sudo apt-get update
+    log_green "installing netselect-apt and executing"
+    sudo apt-get install netselect-apt -y
+    sudo netselect-apt
 }
 
 update_latest(){
-  sudo apt-get update 
-  sudo apt-get upgrade -y
+    sudo apt-get update 
+    sudo apt-get upgrade -y
 }
 
 verify_os() {
@@ -95,12 +100,12 @@ install_snapcast(){
 }
 
 install_UPnP_renderer(){
-    if [[ -z $UPnPRenderer ]]; then 
+    if [[ -z $UPnPRendererInstall ]]; then 
       read -p "Do you want to install UPnP renderer? [y/N] " REPLY
       #https://github.com/Torgee/rpi-audio-receiver/blob/master/install-upnp.sh
       if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
     fi
-    if ! $UPnPRenderer ; then return; fi
+    if ! $UPnPRendererInstall ; then return; fi
 
     log_green "Installing UPnP renderer (gmrender-resurrect)"
     banner
@@ -108,17 +113,17 @@ install_UPnP_renderer(){
     sudo apt update
     sudo apt install -y --no-install-recommends gmediarender gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-alsa
 
-    ${PRETTY_HOSTNAME:-$(hostname)}
-    sudo tee /etc/default/gmediarender >/dev/null <<'EOF'
+    LIBRESPOT_NAME="${PRETTY_HOSTNAME// /-}"
+    LIBRESPOT_NAME=${LIBRESPOT_NAME:-$(hostname)}
+    sudo tee /etc/default/gmediarender >/dev/null <<EOF
 ENABLED=1
 DAEMON_USER="nobody:audio"
-UPNP_DEVICE_NAME="${PRETTY_HOSTNAME}"
+UPNP_DEVICE_NAME="${LIBRESPOT_NAME}"
 INITIAL_VOLUME_DB=0.0
 ALSA_DEVICE="sysdefault"
 EOF
 
     sudo systemctl enable --now gmediarender
-
 }
 
 install_bluetooth() {
@@ -165,7 +170,7 @@ KillSignal=SIGUSR1
 WantedBy=multi-user.target
 EOF
     sudo systemctl daemon-reload
-    sudo systemctl enable --now bt-agent@hci0.service
+    sudo systemctl enable bt-agent@hci0.service
 
     log_green "Bluetooth: installing udev script"
     sudo tee /usr/local/bin/bluetooth-udev >/dev/null <<'EOF'
@@ -192,6 +197,18 @@ EOF
 SUBSYSTEM=="input", GROUP="input", MODE="0660"
 KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluetooth-udev"
 EOF
+
+read -p "Do you want to configure Bluetooth A2DP volume? [y/N] " REPLY
+if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+# Enable A2DP volume control
+    sudo mkdir -p /etc/systemd/system/bluetooth.service.d
+    sudo tee /etc/systemd/system/bluetooth.service.d/override.conf >/dev/null  <<'EOF'
+[Service]
+ExecStart=
+ExecStart=/usr/libexec/bluetooth/bluetoothd --plugin=a2dp
+EOF
+
+
 }
 
 install_shairport() {
@@ -317,7 +334,13 @@ while getopts "nbsruc" opt; do
     r) raspotifyInstall=true;;
     u) UPnPRendererInstall=true;;
     c) snapclientInstall=true;;
-    ?) echo "script usage: $(basename $0) [-n][-b][-s][-r][-u][-c]" 
+    ?) echo "script usage: $(basename $0) [-n][-b][-s][-r][-u][-c]
+      -n Change Host Name
+      -b Install bluetooth features
+      -s Install Shairplay (Airplay support)
+      -r Raspotify (Spotify support)
+      -u UPnP Render Install
+      -c Snapcast Client Install" 
       exit 1
       ;;
   esac
@@ -331,14 +354,14 @@ if (( $OPTIND == 1 )); then
   raspotifyInstall=""
   UPnPRendererInstall=""
   snapclientInstall=""
+  verify_os
+  apt_update_netselect
 fi
 
-verify_os
-apt_update_netselect
 set_hostname $changeHostname
 install_bluetooth $bluetoothInstall
 install_shairport $shairportInstall
 install_raspotify $raspotifyInstall
-install_snapclient $snapclientInstall
+install_snapcast $snapclientInstall
 install_UPnP_renderer $UPnPRendererInstall
 

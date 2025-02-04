@@ -31,6 +31,11 @@ Lets you choose the hostname and the visible device name ("pretty hostname") whi
 
 Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through ALSA. A udev script is installed that disables discoverability while connected.
 
+### UPnP
+
+Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect)
+UPnP Renderer
+
 ### AirPlay 2
 
 Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay 2 Audio Receiver.
@@ -128,11 +133,17 @@ sudo nmcli connection modify preconfigured wifi.powersave 2
 When an external audio device (HDMI, USB, I2S) is used, the internal audio can be disabled in `/boot/firmware/config.txt` (replace `hifiberry-dacplus` with the overlay which fits your installation):
 
 ```
-...
 dtoverlay=disable-bt
 dtparam=audio=off
+dtoverlay=pi3-disable-bt
+```
+```
 dtoverlay=vc4-kms-v3d,noaudio
-dtoverlay=hifiberry-dacplus
+dtoverlay=dwc2,dr_mode=host
+```
+#### Enable Raspberry Pi DigiAmp Plus
+```
+dtoverlay=rpi-digiampplus,auto_mute_amp
 ```
 
 ### Add Bluetooth devices
@@ -247,6 +258,7 @@ There are many forks and similar projects that are optimized for more specific r
 
 - [Shairport Sync: AirPlay 2 audio player](https://github.com/mikebrady/shairport-sync)
 - [Raspotify: A Spotify Connect client that mostly Just Works™](https://github.com/dtcooper/raspotify)
+- [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect)
 
 ## License
 

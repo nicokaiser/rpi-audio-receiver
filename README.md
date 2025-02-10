@@ -31,6 +31,11 @@ Lets you choose the hostname and the visible device name ("pretty hostname") whi
 
 Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through ALSA. A udev script is installed that disables discoverability while connected.
 
+### UPnP
+
+Installs [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect)
+UPnP Renderer
+
 ### AirPlay 2
 
 Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay 2 Audio Receiver.
@@ -110,16 +115,35 @@ Disabling Wi-Fi power management might resolve some connection issues:
 sudo nmcli connection modify preconfigured wifi.powersave 2
 ```
 
+### Enabling Audio DAC Amp Hats:
+
+|IQaudio Card| /boot/firmware/config.txt|
+|---|---|
+| DAC+ | ```dtoverlay=iqaudio-dacplus ``` |
+| DAC PRO | ```dtoverlay=iqaudio-dacplus ``` |
+| DigiAMP+ |  ```dtoverlay=iqaudio-dacplus,unmute_amp ``` or ``` dtoverlay=iqaudio-dacplus,auto_mute_amp ``` |
+| Codec Zero |```dtoverlay=iqaudio-codec ```|
+|Raspi CodeZero |```dtoverlay=rpi-codeczero ```|
+|Raspi DAC+ |```dtoverlay=rpi-dacplus ```|
+|Raspi DACPro |```dtoverlay=rpi-dacpro ```|
+|Raspi DigiAMP+ |```dtoverlay=rpi-digiampplus ```|
+
 ### Disable internal Bluetooth and Audio
 
 When an external audio device (HDMI, USB, I2S) is used, the internal audio can be disabled in `/boot/firmware/config.txt` (replace `hifiberry-dacplus` with the overlay which fits your installation):
 
 ```
-...
 dtoverlay=disable-bt
 dtparam=audio=off
+dtoverlay=pi3-disable-bt
+```
+```
 dtoverlay=vc4-kms-v3d,noaudio
-dtoverlay=hifiberry-dacplus
+dtoverlay=dwc2,dr_mode=host
+```
+#### Enable Raspberry Pi DigiAmp Plus
+```
+dtoverlay=rpi-digiampplus,auto_mute_amp
 ```
 
 ### Add Bluetooth devices
@@ -159,6 +183,9 @@ fi
 ### Bluetooth A2DP volume
 
 To enable A2DP volume control, add the `--plugin=a2dp` parameter to the `bluetoothd` command line. This helps setting the volume via Bluetooth, but does not work on all setups.
+```
+sudo apt-get install alsa-utils bluez bluez-tools pulseaudio-module-bluetooth
+```
 
 ```sh
 # Enable A2DP volume control
@@ -169,7 +196,7 @@ ExecStart=
 ExecStart=/usr/libexec/bluetooth/bluetoothd --plugin=a2dp
 EOF
 ```
-
+** WARNING: This can mess up your bluetooth configuration**
 ### Bluetooth Fast Connectable
 
 Using the `FastConnectable` flag may lead to faster Bluetooth connections, but may also lead to poor sound quality. You can try and see if it works for you. See [#70](https://github.com/nicokaiser/rpi-audio-receiver/issues/70)
@@ -213,6 +240,25 @@ So you need to try yourself if this works with your setup.
 
 These scripts are tested and work on a current Raspberry Pi OS setup on Raspberry Pi. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
 
+## Trouble shooting:
+
+### Bluetooth:
+
+It can fail to power on after first boot:
+```
+bluetoothctl
+power on
+```
+The bluetooth.service can 'Fail to set mode: Failed'
+```
+sudo rfkill unblock bluetooth
+sudo systemctl stop bluetooth
+sudo systemctl status bluetooth
+sudo systemctl restart bluetooth
+```
+
+If it comes up with a Bluetooth name like 'Bluez', you may need to wipe and start over.
+
 ## Upgrading
 
 This project does not really support upgrading to newer versions of this script. It is meant to be adjusted to your needs and run on a clean Raspberry Pi OS install. When something goes wrong, the easiest way is to just wipe the SD card and start over. Since apart from Bluetooth pairing information all parts are stateless, this should be ok.
@@ -234,6 +280,7 @@ There are many forks and similar projects that are optimized for more specific r
 
 - [Shairport Sync: AirPlay 2 audio player](https://github.com/mikebrady/shairport-sync)
 - [Raspotify: A Spotify Connect client that mostly Just Works™](https://github.com/dtcooper/raspotify)
+- [gmrender-resurrect](http://github.com/hzeller/gmrender-resurrect)
 
 ## License
 

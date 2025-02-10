@@ -245,14 +245,17 @@ These scripts are tested and work on a current Raspberry Pi OS setup on Raspberr
 ### Bluetooth:
 
 It can fail to power on after first boot:
-`bluetoothctl
+```
+bluetoothctl
 power on
-`
+```
 The bluetooth.service can 'Fail to set mode: Failed'
-`sudo rfkill unblock bluetooth
+```
+sudo rfkill unblock bluetooth
 sudo systemctl stop bluetooth
 sudo systemctl status bluetooth
-sudo systemctl restart bluetooth`
+sudo systemctl restart bluetooth
+```
 
 If it comes up with a Bluetooth name like 'Bluez', you may need to wipe and start over.
 

@@ -35,6 +35,9 @@ banner(){
 }
 
 apt_update_netselect(){
+
+    # netselect on rpi doesn't seem to actually change /etc/apt/sources.list
+    # commenting out until i figure out why
     banner
     read -p "Do you want to change apt (netselect-apt)? [y/N] " REPLY
     if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
@@ -136,7 +139,7 @@ install_bluetooth() {
     log_green "Bluetooth installation"
     banner
 
-    log_green "Bluetooth: Setting Audio ALSA Backend (bluez-alsa-utils)"
+    log_green "Bluetooth: Installing Audio ALSA Backend (bluez-alsa-utils)"
     sudo apt update
     sudo apt install -y --no-install-recommends bluez-tools bluez-alsa-utils
 
@@ -197,18 +200,25 @@ EOF
 SUBSYSTEM=="input", GROUP="input", MODE="0660"
 KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluetooth-udev"
 EOF
+sudo systemctl daemon-reload
 
-read -p "Do you want to configure Bluetooth A2DP volume? [y/N] " REPLY
-if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
-# Enable A2DP volume control
-    sudo mkdir -p /etc/systemd/system/bluetooth.service.d
-    sudo tee /etc/systemd/system/bluetooth.service.d/override.conf >/dev/null  <<'EOF'
-[Service]
-ExecStart=
-ExecStart=/usr/libexec/bluetooth/bluetoothd --plugin=a2dp
-EOF
-
-
+# Disabled due to unreliable results for bluetooth.service naming and 
+# bluetoothctl agent configuration
+#read -p "Do you want to configure Bluetooth A2DP volume? [y/N] " REPLY
+#if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+#  # Enable A2DP volume control
+#    log_green "Bluetooth: Installing Audio Pulse Audio"
+#    sudo apt-get install alsa-utils bluez bluez-tools pulseaudio-module-bluetooth 
+#
+#    sudo mkdir -p /etc/systemd/system/bluetooth.service.d
+#    sudo tee /etc/systemd/system/bluetooth.service.d/override.conf >/dev/null  <<'EOF'
+#[Service]
+#ExecStart=
+#ExecStart=/usr/libexec/bluetooth/bluetoothd --plugin=a2dp
+#EOF
+#sudo systemctl daemon-reload
+#sudo systemctl restart bluetooth.service
+#
 }
 
 install_shairport() {
@@ -324,8 +334,9 @@ changeHostname=false
 bluetoothInstall=false
 shairportInstall=false
 raspotifyInstall=false
-UPnPRendererInstall=false 
-snapclientInstall=false 
+UPnPRendererInstall=false
+snapclientInstall=false
+
 while getopts "nbsruc" opt; do
   case "$opt" in
     n) changeHostname=true ;;
@@ -347,7 +358,7 @@ while getopts "nbsruc" opt; do
 done
 
 if (( $OPTIND == 1 )); then
-  echo "Default option"
+  echo "Default installation options"
   changeHostname=""
   bluetoothInstall=""
   shairportInstall=""
@@ -355,13 +366,13 @@ if (( $OPTIND == 1 )); then
   UPnPRendererInstall=""
   snapclientInstall=""
   verify_os
-  apt_update_netselect
+  # apt_update_netselect
 fi
 
 set_hostname $changeHostname
 install_bluetooth $bluetoothInstall
 install_shairport $shairportInstall
 install_raspotify $raspotifyInstall
-install_snapcast $snapclientInstall
 install_UPnP_renderer $UPnPRendererInstall
+install_snapcast $snapclientInstall
 

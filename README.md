@@ -123,10 +123,10 @@ sudo nmcli connection modify preconfigured wifi.powersave 2
 | DAC PRO | ```dtoverlay=iqaudio-dacplus ``` |
 | DigiAMP+ |  ```dtoverlay=iqaudio-dacplus,unmute_amp ``` or ``` dtoverlay=iqaudio-dacplus,auto_mute_amp ``` |
 | Codec Zero |```dtoverlay=iqaudio-codec ```|
-| |```dtoverlay=rpi-codeczero ```|
-| |```dtoverlay=rpi-dacplus ```|
-| |```dtoverlay=rpi-dacpro ```|
-| |```dtoverlay=rpi-digiampplus ```|
+|Raspi CodeZero |```dtoverlay=rpi-codeczero ```|
+|Raspi DAC+ |```dtoverlay=rpi-dacplus ```|
+|Raspi DACPro |```dtoverlay=rpi-dacpro ```|
+|Raspi DigiAMP+ |```dtoverlay=rpi-digiampplus ```|
 
 ### Disable internal Bluetooth and Audio
 
@@ -183,6 +183,9 @@ fi
 ### Bluetooth A2DP volume
 
 To enable A2DP volume control, add the `--plugin=a2dp` parameter to the `bluetoothd` command line. This helps setting the volume via Bluetooth, but does not work on all setups.
+```
+sudo apt-get install alsa-utils bluez bluez-tools pulseaudio-module-bluetooth
+```
 
 ```sh
 # Enable A2DP volume control
@@ -193,7 +196,7 @@ ExecStart=
 ExecStart=/usr/libexec/bluetooth/bluetoothd --plugin=a2dp
 EOF
 ```
-
+** WARNING: This can mess up your bluetooth configuration**
 ### Bluetooth Fast Connectable
 
 Using the `FastConnectable` flag may lead to faster Bluetooth connections, but may also lead to poor sound quality. You can try and see if it works for you. See [#70](https://github.com/nicokaiser/rpi-audio-receiver/issues/70)
@@ -236,6 +239,22 @@ So you need to try yourself if this works with your setup.
 ## Disclaimer
 
 These scripts are tested and work on a current Raspberry Pi OS setup on Raspberry Pi. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
+
+## Trouble shooting:
+
+### Bluetooth:
+
+It can fail to power on after first boot:
+`bluetoothctl
+power on
+`
+The bluetooth.service can 'Fail to set mode: Failed'
+`sudo rfkill unblock bluetooth
+sudo systemctl stop bluetooth
+sudo systemctl status bluetooth
+sudo systemctl restart bluetooth`
+
+If it comes up with a Bluetooth name like 'Bluez', you may need to wipe and start over.
 
 ## Upgrading
 

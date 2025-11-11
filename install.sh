@@ -161,7 +161,6 @@ function set_hostname() {
       read -p "Pretty hostname [${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}]: " PRETTY_HOSTNAME
       PRETTY_HOSTNAME="${PRETTY_HOSTNAME:-${CURRENT_PRETTY_HOSTNAME:-Raspberry Pi}}"
       sudo hostnamectl set-hostname --pretty "$PRETTY_HOSTNAME"
-    fi
 }
 
 function install_snapcast(){

@@ -52,6 +52,7 @@ install_bluetooth() {
 [General]
 Class = 0x200414
 DiscoverableTimeout = 0
+JustWorksRepairing=always
 
 [Policy]
 AutoEnable=true

@@ -18,10 +18,16 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 The installation script asks whether to install each component.
 
-    wget https://raw.githubusercontent.com/nicokaiser/rpi-audio-receiver/main/install.sh
+Download [`install.sh`](https://raw.githubusercontent.com/dave090679/rpi-audio-receiver/main/install.sh) from this fork, then run:
+
     bash install.sh
 
 **Note**: the installation process is not reversible, there is no uninstall. The script is meant to be run on a clean device that is not used for anything else.
+
+On Raspberry Pi OS 13 (Trixie), the installer can also apply optional compatibility fixes:
+
+- safe Bluetooth RFKill unblock (immediately and on every boot)
+- optional HDMI audio disable (`dtoverlay=vc4-kms-v3d,noaudio`) to force output to headphone/USB/I2S
 
 ### Basic setup
 
@@ -38,6 +44,37 @@ Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay 2
 ### Spotify Connect
 
 Installs [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi.
+
+### Fresh Trixie checklist
+
+For a fresh Raspberry Pi OS 13 (Trixie) setup, run through this checklist:
+
+1. Start from a clean Raspberry Pi OS 13 Lite image and complete first boot updates.
+2. Run the installer and enable Bluetooth/AirPlay/Spotify components you need.
+3. Answer `y` for the optional Trixie fixes.
+4. Answer `y` for HDMI audio disable when you use headphone jack, USB DAC, or I2S output.
+5. Reboot after installation to apply audio overlay and service changes.
+6. Verify Bluetooth state with `rfkill list` and pair a test device.
+7. Verify output device with `aplay -l` and run a short playback test.
+
+### Reviewer verification commands
+
+Run these commands on a freshly installed Trixie system after reboot:
+
+    # Core services should be active
+    systemctl --no-pager --full status bluetooth bt-agent@hci0 bluealsa bluealsa-aplay rfkill-unblock-bluetooth
+
+    # Bluetooth should not be soft/hard blocked
+    rfkill list
+
+    # Controller should be powered, pairable, and discoverable
+    bluetoothctl show
+
+    # noaudio overlay should be present if selected during install
+    grep -E '^dtoverlay=vc4-kms-v3d.*noaudio' /boot/firmware/config.txt
+
+    # Audio sink visibility
+    aplay -l
 
 ## Additional steps
 
@@ -200,6 +237,26 @@ To enable pairing with a PIN code instead of Simple Secure Pairing mode, the fol
 - macOS allows pairing with devices with sspmode=0 (and a PIN configured on the Pi). When sspmode=1, macOS decides upon a PIN and either the Pi has a fixed PIN list (which does not match => connection refused), or requires keyboard input on the Pi (which is not desired for a headless device).
 
 So you need to try yourself if this works with your setup.
+
+### Bluetooth not discoverable
+
+If the Raspberry Pi is not visible as a Bluetooth device after installation, the Bluetooth radio may be soft-blocked. Unblock it with:
+
+```sh
+rfkill unblock 0
+```
+
+The unblocked state is saved persistently and survives reboots, so this only needs to be done once.
+
+### Force audio output to headphone jack
+
+If audio is routed to HDMI instead of the 3.5 mm headphone jack, add the `noaudio` parameter to the `vc4-kms-v3d` overlay in `/boot/firmware/config.txt`:
+
+```
+dtoverlay=vc4-kms-v3d,noaudio
+```
+
+This disables HDMI audio and forces output to the headphone jack.
 
 ## Limitations
 

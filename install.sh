@@ -2,8 +2,8 @@
 
 set -e
 
-NQPTP_VERSION="1.2.4"
-SHAIRPORT_SYNC_VERSION="4.3.2"
+NQPTP_VERSION="1.2.6"
+SHAIRPORT_SYNC_VERSION="5.0.2"
 TMP_DIR=""
 
 cleanup() {
@@ -13,7 +13,7 @@ cleanup() {
 }
 
 verify_os() {
-    MSG="Unsupported OS: Raspberry Pi OS 12 (bookworm) is required."
+    MSG="Unsupported OS: Raspberry Pi OS 12 (bookworm) or 13 (trixie) is required."
 
     if [ ! -f /etc/os-release ]; then
         echo $MSG
@@ -22,7 +22,7 @@ verify_os() {
 
     . /etc/os-release
 
-    if [[ ("$ID" != "debian" && "$ID" != "raspbian") || "$VERSION_ID" != "12" ]]; then
+    if [[ ("$ID" != "debian" && "$ID" != "raspbian") || "$VERSION_ID" -lt 12 ]]; then
         echo $MSG
         exit 1
     fi
@@ -66,9 +66,9 @@ Requires=bluetooth.service
 After=bluetooth.service
 
 [Service]
+ExecStartPre=/usr/bin/bluetoothctl power on
 ExecStartPre=/usr/bin/bluetoothctl discoverable on
-ExecStartPre=/bin/hciconfig %I piscan
-ExecStartPre=/bin/hciconfig %I sspmode 1
+ExecStartPre=/usr/bin/bluetoothctl pairable on
 ExecStart=/usr/bin/bt-agent --capability=NoInputNoOutput
 RestartSec=5
 Restart=always
@@ -78,7 +78,10 @@ KillSignal=SIGUSR1
 WantedBy=multi-user.target
 EOF
     sudo systemctl daemon-reload
-    sudo systemctl enable bt-agent@hci0.service
+    sudo systemctl enable --now bluetooth
+    sudo systemctl enable --now bt-agent@hci0.service
+    sudo systemctl enable --now bluealsa
+    sudo systemctl enable --now bluealsa-aplay
 
     # Bluetooth udev script
     sudo tee /usr/local/bin/bluetooth-udev >/dev/null <<'EOF'
@@ -112,7 +115,8 @@ install_shairport() {
     if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
 
     sudo apt update
-    sudo apt install -y --no-install-recommends wget unzip autoconf automake build-essential libtool git autoconf automake libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev libplist-dev libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt20-dev xxd
+    sudo apt install -y --no-install-recommends wget unzip autoconf automake build-essential libtool git libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev libplist-dev libplist-utils libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
+    sudo apt install -y --no-install-recommends systemd-dev 2>/dev/null || true
 
     if [[ -z "$TMP_DIR" ]]; then
         TMP_DIR=$(mktemp -d)
@@ -148,7 +152,7 @@ install_shairport() {
     unzip shairport-sync-${SHAIRPORT_SYNC_VERSION}.zip
     cd shairport-sync-${SHAIRPORT_SYNC_VERSION}
     autoreconf -fi
-    ./configure --sysconfdir=/etc --with-alsa --with-soxr --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2 --with-apple-alac
+    ./configure --sysconfdir=/etc --with-alsa --with-soxr --with-avahi --with-ssl=openssl --with-systemd-startup --with-airplay-2 --with-apple-alac
     make -j $(nproc)
     sudo make install
     cd ..
@@ -198,6 +202,50 @@ EOF
     sudo systemctl enable raspotify
 }
 
+install_trixie_fixes() {
+    read -p "Do you want to apply Trixie fixes (safe Bluetooth unblock and optional HDMI audio disable)? [y/N] " REPLY
+    if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+
+    # Ensure rfkill is available and unblock Bluetooth now.
+    sudo apt update
+    sudo apt install -y --no-install-recommends rfkill
+    sudo rfkill unblock bluetooth || true
+
+    # Keep Bluetooth unblocked across boots, before bluetooth.service starts.
+    sudo tee /etc/systemd/system/rfkill-unblock-bluetooth.service >/dev/null <<'EOF'
+[Unit]
+Description=Unblock Bluetooth RFKill
+DefaultDependencies=no
+After=local-fs.target
+Before=bluetooth.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/rfkill unblock bluetooth
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now rfkill-unblock-bluetooth.service
+
+    read -p "Disable HDMI audio and force output to headphone/USB/I2S (vc4-kms-v3d,noaudio)? [y/N] " REPLY
+    if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
+
+    if grep -Eq '^dtoverlay=vc4-kms-v3d.*noaudio' /boot/firmware/config.txt; then
+        echo "HDMI audio is already disabled in /boot/firmware/config.txt"
+        return
+    fi
+
+    if grep -Eq '^dtoverlay=vc4-kms-v3d' /boot/firmware/config.txt; then
+        sudo sed -i -E '/^dtoverlay=vc4-kms-v3d/ s/dtoverlay=vc4-kms-v3d/dtoverlay=vc4-kms-v3d,noaudio/' /boot/firmware/config.txt
+    else
+        echo 'dtoverlay=vc4-kms-v3d,noaudio' | sudo tee -a /boot/firmware/config.txt >/dev/null
+    fi
+
+    echo "Updated /boot/firmware/config.txt. Reboot required for HDMI audio changes."
+}
+
 trap cleanup EXIT
 
 echo "Raspberry Pi Audio Receiver"
@@ -207,3 +255,4 @@ set_hostname
 install_bluetooth
 install_shairport
 install_raspotify
+install_trixie_fixes
